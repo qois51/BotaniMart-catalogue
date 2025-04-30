@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Tugas Rekayasa Perangkat Lunak",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon server.js --watch public"
@@ -11,7 +12,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "better-sqlite3": "^11.9.1",
     "express": "^5.1.0",
+    "kysely": "^0.28.2",
     "nodemon": "^3.1.9"
   },
   "devDependencies": {
