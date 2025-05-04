@@ -1,0 +1,97 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom right, #83c7b9, #60a798);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+.login_container {
+    box-shadow:
+      0 0 30px rgba(0, 0, 0, 0.2),
+      0 0 60px rgba(255, 255, 255, 0.4),
+      0 0 120px rgba(255, 255, 255, 0.5),
+      0 0 160px rgba(255, 255, 255, 0.5);
+    border-radius: 4px;
+    transition: box-shadow 0.3s ease;
+  }
+  
+.login_box {
+    background: #f5ded3;
+    width: 450px;
+    overflow: hidden;
+  }
+  
+.login_header {
+    background-color: #4d6e64;
+    padding: 15px 20px;
+    color: white;
+    font-weight: bold;
+  }
+  
+.login_header h2 {
+    margin: 0;
+    font-size: 16px;
+  }
+  
+.bagian_input {
+    display: flex;
+    align-items: center;
+    margin: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 8px 10px;
+  }
+  
+.bagian_input i {
+    font-size: 18px;
+    margin-right: 10px;
+    color: #000;
+  }
+  
+.bagian_input input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 14px;
+    color: #000000;
+    font-weight: bold; 
+  }
+  
+.forgot {
+    text-align: right;
+    margin: 0 20px 10px;
+  }
+  
+.forgot a {
+    font-size: 12px;
+    color: #333;
+    text-decoration: none;
+  }
+  
+.forgot a:hover {
+    text-decoration: underline;
+  }
+  
+.login_footer {
+    background: #d3bdb2;
+    padding: 10px 20px;
+    text-align: right;
+  }
+  
+.login_footer button {
+    background-color: #3e978d;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+.login_footer button:hover {
+    background-color: #357f78;
+  }
+  
