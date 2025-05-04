@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="login.css">
+</head>
+<body>
+  <div class="login_container">
+    <div class="login_box">
+      <div class="login_header">
+        <h2>Login To Administration</h2>
+      </div>
+      <form id="loginForm">
+        <div class="bagian_input">
+          <i class="fas fa-user"></i>
+          <input type="text" id="username" placeholder="Username" required>
+        </div>
+        <div class="bagian_input">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="password" placeholder="Password" required>
+        </div>
+        <div class="forgot">
+          <a href="reset.html">Forgot details?</a>
+        </div>
+        <div class="login_footer">
+          <button type="submit">Sign In</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <p id="loginResult"></p>
+
+  <script>
+    // Add event listener for form submission
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      // Make the login API request
+      const res = await fetch("/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+
+      if (data.message === "Login berhasil") {
+        window.location.href = "dashboard.html";
+      } else {
+        // Handle failure (show error, alert, etc.)
+        alert(data.error || "Login failed. Please try again.");
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,51 +1,29 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const path = require('path');
-const fs = require('fs');
-const livereload = require('livereload');
-const connectLivereload = require('connect-livereload');
+const authRoutes = require('./auth/routes');
 
 const app = express();
-const PORT = 3000;
-const isDev = process.env.NODE_ENV !== 'production';
+const PORT = process.env.PORT || 3000;
 
-// Start livereload server
-if (isDev) {
-  const liveReloadServer = livereload.createServer();
-  liveReloadServer.watch(path.join(__dirname, 'public'));
+// Middleware to parse JSON
+app.use(bodyParser.json());
 
-  liveReloadServer.server.once('connection', () => {
-    setTimeout(() => {
-      liveReloadServer.refresh('/');
-    }, 100);
-  });
-
-  app.use(connectLivereload());
-}
-
-// Middleware to inject livereload script
-app.get('/', (req, res, next) => {
-  const indexPath = path.join(__dirname, 'public', 'index.html');
-
-  fs.readFile(indexPath, 'utf8', (err, data) => {
-    if (err) return next(err);
-
-    // Inject livereload script before </body>
-    const liveReloadScript = `<script src="http://localhost:35729/livereload.js?snipver=1"></script>`;
-    const result = data.replace('</body>', `${liveReloadScript}</body>`);
-
-    res.send(result);
-  });
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Serve static files
-app.use(express.static('public'));
-
-// API route
-app.get('/api/hello', (req, res) => {
-  res.json({ message: 'Hello from Express with LiveReload!' });
+app.get('/admin', (req, res) => {
+  console.log('Serving login.html');
+  res.sendFile(path.join(__dirname, 'public', 'loginFrontend.html'));
 });
 
-// Start server
+// Static files middleware should come after the route
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Auth routes
+app.use('/auth', authRoutes);
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });

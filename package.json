@@ -6,7 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon server.js --watch public"
+    "dev": "nodemon server.js --watch server.js --watch public"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +14,7 @@
   "dependencies": {
     "better-sqlite3": "^11.9.1",
     "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
     "kysely": "^0.28.2",
     "nodemon": "^3.1.9"
   },
