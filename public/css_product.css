@@ -1,0 +1,255 @@
+@import url('https://fonts.googleapis.com/css2?family=Pattaya&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Patua+One&family=Poly:ital@0;1&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  list-style: none;
+  text-decoration: none;
+}
+
+body {
+  font-family: 'Pattaya', sans-serif;
+}
+
+/* HEADER YAAA */
+.header {
+  position: fixed;
+  top: 0;
+  left: o;
+  width: 100%;
+  height: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #4e7c73;
+  padding-left: 40px;
+  padding-top: 10px;
+  padding-bottom: 15px;
+  padding-right: 40px;
+}
+
+.judul {
+  font-size: 40px;
+  color: white;
+}
+
+/* Search */
+.search_bar {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border-radius: 30px;
+  overflow: hidden;
+  height: 43px;
+  width: 45%;
+  }
+  
+.search_bar input {
+    border: none;
+    padding-left: 20px;
+    outline: none;
+    border-radius: 0;
+    font-size: 17px;
+    flex: 1;
+  }
+  
+.search-btn {
+    background-color: #3B9F9F;
+    border: none;
+    padding-right: 18px;
+    padding-left: 18px;
+    height: 100%;
+    cursor: pointer;
+    color: white;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    border-left: 1px solid #4E7C73;
+    transition: background-color 0.2s ease;
+}
+  
+.search-btn:hover {
+  background-color: #5c9089;
+}
+
+/* KONTEN UTAMA */
+.container {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 127px;
+  margin-bottom: auto;
+}
+
+/* Filter dkk */
+.sidebar {
+  width: 40px;
+  height: 630px;
+  background-color: #4E7C73;
+  margin: 30px 0 30px 15px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.panah-bar {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-size: 20px;
+}
+
+.panah-bar:focus {
+  outline: none;
+}
+
+/* Gambar besar */
+.gambar-utama {
+  width: 350px;
+  height: 350px;
+  display: flex;
+  margin-top: 100px;
+  margin-left: 75px;
+}
+
+/* gambar kecil */
+.gambar-preview {
+  display: flex;
+  width: 350px;
+  gap: 10px;
+  margin-left: 85px;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-bottom: 100px;
+}
+
+.gambar-preview img {
+  width: 124px;
+  height: 124px;
+  flex-shrink: 0;
+}
+
+.gambar-preview img:hover {
+  border-color: #4E7C73;
+  transform: scale(1.05);
+}
+
+/* Kelompok informasi produk */
+.informasi-produk {
+  margin-top: 85px;
+  margin-left: 260px;
+}
+
+.judul-produk {
+  display: flex;
+  margin-right: 15px;
+  align-items: baseline
+}
+
+.judul-produk h1 {
+  font-family: 'Patua One';
+  font-size: 38px;
+}
+
+.judul-produk h2 {
+  font-family: 'Poly';
+  font-style: italic;
+  padding-left: 20px;
+}
+
+/* Kelompok stokdkk */
+.stokdkk {
+  font-family: 'Poly';
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+}
+
+/* Bibit Mangga */
+.stokdkk h2 {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+  font-style: italic;
+}
+
+/*background harga */
+.harga-container {
+  background-color: #4e7c73;
+  display: block;
+  width: 100%;
+  padding: 15px 20px;
+  margin-top: 25px;
+  box-sizing: border-box;
+}
+
+.harga {
+  font-family: 'Patua One';
+  color: white;
+  font-size: 28px;
+  letter-spacing: 1px;
+}
+
+/* Deskripsi, cara perawatan, funfact */
+.deskripsi {
+  font-family: 'Poly', serif;
+  font-size: 20px;
+  line-height: 1.3;
+  margin-top: 25px;
+  max-width: 600px;
+  text-align: justify;
+}
+
+.deskripsi p {
+  margin-bottom: 16px;
+  color: #222;
+}
+
+.deskripsi p strong {
+  font-weight: bold;
+}
+
+/* Kontak */
+.floating-box {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  z-index: 999;
+}
+
+.float-btn {
+  width: 70px;
+  height: 70px;
+  border-radius: 15%;
+  color: black;
+  font-size: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s ease;
+}
+
+.float-btn.whatsapp {
+  background-color: #61BFBF;
+}
+
+.float-btn.instagram {
+  background-color: #FEB6B9;
+}
+
+.float-btn:hover {
+  opacity: 0.8;
+}
