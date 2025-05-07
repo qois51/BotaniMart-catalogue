@@ -35,12 +35,11 @@ project-root/
 ```
 
 ## Generate New Database
-Saat file ``db/central.db`` hilang atau terjadi sesuatu, maka harus generate file baru.
+Saat file ``db/central.db`` hilang atau terjadi sesuatu, maka harus generate Database baru.
 
 ### Panduannya
-1. Jalankan script terbaru pada folder ``db/migrations``, Jalankan file js terbaru sesuai dengan tanggal pada nama file.
-    ```
-    node db/migrations/2025...........js
-    ```
-2. Lalu isi database tersebut dengan data, gunakan script js pada folder ``db/migrations``
-3. Konfirmasi jika harus menjalankan prosedur ini.
+Dari root folder jalankan:
+```
+node db/migrate.js migrate latest
+node db/migrate.js seed
+```
