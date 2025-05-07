@@ -2,7 +2,7 @@ const { db } = require('./db/db');
 
 async function queryAdmins() {
     try {
-        const admins = await db.selectFrom('admins').selectAll().execute();
+        const admins = await db.selectFrom('products').selectAll().execute();
 
         console.log('Admins:', admins);
     } catch (error) {
