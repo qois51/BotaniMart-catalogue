@@ -24,6 +24,6 @@ module.exports = {
       .values(adminData)
       .execute();
 
-    console.log(`Seeded ${result.numInsertedOrUpdatedRows} admins`);
+    result;
   }
 };
