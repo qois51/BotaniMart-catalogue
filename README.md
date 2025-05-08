@@ -27,7 +27,12 @@ project-root/
 ├── server/                   # Server-side code (handles API, routing, business logic)
 │
 ├── public/                   # Public-facing assets (static files accessible by the client)
-│   └── index.html            # HTML file served to users (usually the homepage)
+│   ├── views/                # HTML file served to users (usually the homepage)
+│   │   └── index.html
+│   ├── assets/
+│   │   ├── css/
+│   │   └── js/
+│   └── uploads/              # Images
 │
 ├── .gitignore                # Specifies files and folders to ignore in version control (Git)
 ├── package.json              # Node.js dependencies and project metadata
