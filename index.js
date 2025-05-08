@@ -1,3 +1,5 @@
+const livereload = require('livereload');
+const connectLivereload = require('connect-livereload');
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -7,6 +9,11 @@ const authRoutes = require(path.join(PATHS.server, 'auth', 'auth.routes.js'))
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Setup Livereload
+const liveReloadServer = livereload.createServer();
+liveReloadServer.watch(PATHS.public);
+app.use(connectLivereload());
 
 // Middleware to parse JSON
 app.use(bodyParser.json());
@@ -25,6 +32,13 @@ app.get('/admin', (req, res) => {
 
 // Auth routes
 app.use('/auth', authRoutes);
+
+// Notify browser on changes
+liveReloadServer.server.once("connection", () => {
+  setTimeout(() => {
+    liveReloadServer.refresh("/");
+  }, 100);
+});
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
