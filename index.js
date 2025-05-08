@@ -1,7 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
-const authRoutes = require('./auth/routes');
+
+const PATHS = require('./config/paths')
+const authRoutes = require(path.join(PATHS.server, 'auth', 'auth.routes.js'))
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -9,17 +11,17 @@ const PORT = process.env.PORT || 3000;
 // Middleware to parse JSON
 app.use(bodyParser.json());
 
+// Serve static files
+app.use(express.static(path.join(PATHS.public)));
+
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(PATHS.public, 'views', 'index.html'));
 });
 
 app.get('/admin', (req, res) => {
   console.log('Serving login.html');
-  res.sendFile(path.join(__dirname, 'public', 'loginFrontend.html'));
+  res.sendFile(path.join(PATHS.public, 'views', 'login-admin.html'));
 });
-
-// Static files middleware should come after the route
-app.use(express.static(path.join(__dirname, 'public')));
 
 // Auth routes
 app.use('/auth', authRoutes);

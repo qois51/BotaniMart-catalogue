@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-const { db } = require('../db/db');
+const PATHS = require('../../config/paths');
+const { db } = require(PATHS.db);
 
 exports.login = async (req, res) => {
   const { username, password } = req.body;
