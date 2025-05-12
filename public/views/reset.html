@@ -3,21 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <title>Reset Password</title>
+  <link rel="stylesheet" href="../assets/css/reset.css">
 </head>
 <body>
-  <h2>Cek Email</h2>
-  <form id="emailForm">
-    <input type="email" id="email" placeholder="Masukkan Email" required /><br>
-    <button type="submit">Cek</button>
-  </form>
 
-  <div id="passwordSection" style="display:none;">
-    <h3>Password Baru</h3>
-    <input type="password" id="newPassword" placeholder="Password Baru" /><br>
-    <button onclick="resetPassword()">Reset Password</button>
+  <div class="reset-container">
+    <h2>Cek Email</h2>
+
+    <form id="emailForm">
+      <input type="email" id="email" placeholder="Masukkan Email" required />
+      <button type="submit">Cek</button>
+    </form>
+
+    <div id="passwordSection" style="display:none;">
+      <h3>Password Baru</h3>
+      <input type="password" id="newPassword" placeholder="Password Baru" />
+      <button onclick="resetPassword()">Reset Password</button>
+    </div>
+
+    <p id="resetResult"></p>
   </div>
-
-  <p id="resetResult"></p>
 
   <script>
     let currentEmail = '';
@@ -53,5 +58,6 @@
       document.getElementById("resetResult").textContent = data.message || data.error;
     }
   </script>
+
 </body>
 </html>
