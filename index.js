@@ -37,8 +37,19 @@ app.use('/auth', authRoutes);
 // Products route
 app.get('/products', async (req, res) => {
   try {
-    const products = await queryProducts();
-    res.json(products);
+    const id = req.query.id ? parseInt(req.query.id) : null;
+
+    if (id && isNaN(id)) {
+      return res.status(400).json({ error: 'Parameter ID tidak valid.' });
+    }
+
+    const product = await queryProducts(id);
+
+    if (id && !product) {
+      return res.status(404).json({ error: 'Produk tidak ditemukan.' });
+    }
+
+    res.json(product);
   } catch (error) {
     console.error('Error fetching products:', error);
     res.status(500).send('Internal Server Error');
