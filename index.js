@@ -31,6 +31,11 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(PATHS.public, 'views', 'login-admin.html'));
 });
 
+app.get('/newadmin', (req, res) => {
+  console.log('Serving login.html');
+  res.sendFile(path.join(PATHS.public, 'views', 'new-admin.html'));
+});
+
 // Auth routes
 app.use('/auth', authRoutes);
 
