@@ -6,6 +6,7 @@ const path = require('path');
 
 const PATHS = require('./config/paths')
 const authRoutes = require(path.join(PATHS.server, 'auth', 'auth.routes.js'))
+const { queryProducts } = require(path.join(PATHS.server, 'logic', 'queryProduct.js'));
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -32,6 +33,17 @@ app.get('/admin', (req, res) => {
 
 // Auth routes
 app.use('/auth', authRoutes);
+
+// Products route
+app.get('/products', async (req, res) => {
+  try {
+    const products = await queryProducts();
+    res.json(products);
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 // Notify browser on changes
 liveReloadServer.server.once("connection", () => {
