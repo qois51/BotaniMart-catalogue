@@ -60,8 +60,8 @@ body {
 }
 
 .main-image {
-    width: 450px;
-    height: 450px;
+    width: 350px;
+    height: 350px;
     border-radius: 10px;
     object-fit: cover;
     margin-top: 2rem;
@@ -79,8 +79,8 @@ body {
 }
 
 .thumb {
-    width: 160px;
-    height: 150px;
+    width: 120px;
+    height: 110px;
     border-radius: 6px;
     object-fit: cover;
     border: 1px solid #ccc;
@@ -107,7 +107,7 @@ body {
 .form-section {
     flex: 1;
     padding-top: 2rem;
-    margin-left: 5rem;
+    margin-left: rem;
 }
 
 .form-inputs {
@@ -124,7 +124,7 @@ body {
     background-color: #fbede9;
      border-style: solid;
     color: #555;
-    width: 183px;
+    width: 182px;
     height: 60px;
     font-family: sans-serif;
     font-size: 20px;
@@ -151,7 +151,7 @@ body {
 
 .description {
     width: 580px;
-    height: 353px;
+    height: 240px;
     border-radius: 10px;
     background-color: #fbede9;
     color: #555;
@@ -169,11 +169,11 @@ body {
     background-color: #fbede9;
     padding: 1rem;
     border-radius: 10px;
-    height: 690px;
+    height: 480px;
     max-height: 700px;
     overflow-y: auto;
-    margin-left: 2rem;
-    margin-top: rem;
+    margin-left: 1.5rem;
+    margin-top: 2rem;
     margin-right: 2rem;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
     
@@ -195,7 +195,7 @@ body {
     flex-direction: column;
     gap: 1rem;
     font-family: poly;
-    font-size: 25px;
+    font-size: 20px;
 }
 
 .product-item {
@@ -209,8 +209,8 @@ body {
 }
 
 .product-item img {
-    width: 130px;
-    height: 130px;
+    width: 100px;
+    height: 100px;
     object-fit: cover;
     border-radius: 6px;
 }
@@ -224,13 +224,13 @@ body {
     background-color: #4E7C73;
     border: none;
     width: 125px;
-    height: 80px;
+    height: 60px;
     border-radius: 10px;
     font-size: 18px;
     color: white;
     cursor: pointer;
-    margin-bottom: 3rem;
-    margin-right: 64.1rem;
+    margin-bottom: 0.8rem;
+    margin-right: 52.7rem;
 }
 
 .add-product:hover{
@@ -244,13 +244,13 @@ body {
     background-color: #b31800;
     border: none;
     width: 125px;
-    height: 80px;
+    height: 60px;
     border-radius: 10px;
     font-size: 18px;
     color: white;
     cursor: pointer;
-    margin-bottom: 3rem;
-    margin-right: 55rem;
+    margin-bottom: 0.8rem;
+    margin-right: 44rem;
 }
 
 .delete-product:hover{
