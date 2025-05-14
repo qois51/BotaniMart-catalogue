@@ -13,11 +13,13 @@ async function fetchAndRenderProducts() {
     // Loop through the products and create HTML for each
     products.forEach(product => {
       const productHTML = `
-        <div class="produk">
-          <img src="${product.product_picture || '../uploads/default.png'}" alt="${product.product_name}">
-          <p>${product.product_name}</p>
-          <p class="harga">Rp ${parseInt(product.product_price).toLocaleString('id-ID')}</p>
-        </div>
+        <a href="views/product-details.html?id=${product.id_product}" class="produk-link">
+          <div class="produk">
+            <img src="${product.product_picture || '../uploads/default.png'}" alt="${product.product_name}">
+            <p>${product.product_name}</p>
+            <p class="harga">Rp ${parseInt(product.product_price).toLocaleString('id-ID')}</p>
+          </div>
+        </a>
       `;
       produkRow.innerHTML += productHTML;
     });
