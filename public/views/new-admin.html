@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Account</title>
+  <link rel="stylesheet" href="../assets/css/newAdmin.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poly&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="signup-container">
+    <form class="signup-form">
+      <!-- LEFT SECTION -->
+      <div class="form-left">
+        <h2>Create Account</h2>
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" placeholder="Username" required />
+        </div>
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" placeholder="Full Name" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="you@example.com" required />
+        </div>
+      </div>
+
+      <!-- RIGHT SECTION -->
+      <div class="form-right">
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Password" required />
+          <div class="show-pass">
+            <input type="checkbox" id="togglePassword"> <span>Show Password</span>
+          </div>
+        </div>
+
+        <div class="boxSyarat">
+          <label><input type="checkbox" id="uppercase" disabled> Uppercase letter (A-Z)</label>
+          <label><input type="checkbox" id="lowercase" disabled> Lowercase letter (a-z)</label>
+          <label><input type="checkbox" id="number" disabled> Number (0-9)</label>
+          <label><input type="checkbox" id="special" disabled> Symbol (!@#...)</label>
+          <label><input type="checkbox" id="length" disabled> Minimal 8 characters</label>
+        </div>
+
+        <button type="submit" class="submit-btn">Sign Up</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- SCRIPT -->
+  <script src="../assets/js/newadmin.js"></script>
+</body>
+</html>

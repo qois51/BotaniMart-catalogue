@@ -6,6 +6,7 @@ const path = require('path');
 
 const PATHS = require('./config/paths')
 const authRoutes = require(path.join(PATHS.server, 'auth', 'auth.routes.js'))
+const { queryProducts } = require(path.join(PATHS.server, 'logic', 'queryProduct.js'));
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -30,8 +31,35 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(PATHS.public, 'views', 'login-admin.html'));
 });
 
+app.get('/newadmin', (req, res) => {
+  console.log('Serving login.html');
+  res.sendFile(path.join(PATHS.public, 'views', 'new-admin.html'));
+});
+
 // Auth routes
 app.use('/auth', authRoutes);
+
+// Products route
+app.get('/products', async (req, res) => {
+  try {
+    const id = req.query.id ? parseInt(req.query.id) : null;
+
+    if (id && isNaN(id)) {
+      return res.status(400).json({ error: 'Parameter ID tidak valid.' });
+    }
+
+    const product = await queryProducts(id);
+
+    if (id && !product) {
+      return res.status(404).json({ error: 'Produk tidak ditemukan.' });
+    }
+
+    res.json(product);
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 // Notify browser on changes
 liveReloadServer.server.once("connection", () => {

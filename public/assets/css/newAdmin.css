@@ -1,0 +1,185 @@
+* {
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #e9ecef;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to bottom right, #83c7b9, #60a798);
+}
+
+.signup-container {
+  width: 1000px;
+  height: 600px;
+  display: flex;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.signup-form {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+/* LEFT - BLUE */
+.form-left {
+  flex: 1;
+  background: #1e6656;
+  color: white;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.form-left h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.form-left .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-left .form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.form-left .form-group input {
+  width: 100%;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+/* RIGHT - WHITE */
+.form-right {
+  flex: 1;
+  background: #fff;
+  padding-top: 12.7rem;
+  padding-left: 3rem;
+  padding-bottom: 3rem;
+  padding-right: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.form-right .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-right label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-right input[type="password"] {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.form-right input[type="text"] {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: none; /* Hindari animasi yang bikin 'mengecil' */
+}
+
+.form-right input[type="password"]:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Show password no scale */
+.show-pass {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transform: none !important;
+}
+
+.show-pass input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0; /* Jangan mengecil */
+}
+
+/* Custom Syarat Checkboxes */
+.boxSyarat {
+  margin-top: 0.2rem;
+  margin-bottom: 0.5rem;
+  font-family: 'Poly', serif;
+  font-size: 15px;
+}
+
+.boxSyarat label {
+  display: flex;
+  align-items: center;
+  opacity: 70%;
+  margin-bottom: 8px;
+}
+
+.boxSyarat input[type="checkbox"] {
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border: 2px solid #5c4b85;
+  border-radius: 4px;
+  margin-right: 10px;
+  position: relative;
+  cursor: default;
+  background-color: #fff;
+}
+
+.boxSyarat input[type="checkbox"]:checked {
+  background-color: #5c4b85;
+}
+
+.boxSyarat input[type="checkbox"]:checked::after {
+  content: '✔';
+  color: white;
+  font-size: 13px;
+  position: absolute;
+  top: -2px;
+  left: 3px;
+}
+
+.submit-btn {
+  margin-top: auto;
+  width: 100%;
+  padding: 0.9rem;
+  background: #1e6656;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.submit-btn:hover {
+  background: #83c7b9;
+}

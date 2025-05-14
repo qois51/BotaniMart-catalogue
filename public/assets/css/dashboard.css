@@ -1,0 +1,193 @@
+@import url('https://fonts.googleapis.com/css2?family=Patua+One&family=Poly&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Pattaya&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poly', sans-serif;
+  background-color: #F8F8F8;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background-color: #4E7C73;
+  display: flex;
+  align-items: center;
+  padding: 0 25px;
+  z-index: 1000;
+}
+
+.judul {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 40px;
+  color: white;
+  font-family: 'Pattaya';
+}
+
+.profile-icon {
+  margin-left: auto;
+  font-size: 50px;
+  color: white;
+  cursor: pointer;
+}
+
+.profile-icon {
+  position: relative;
+}
+
+.dropdown-profile {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  display: none;
+  min-width: 160px;
+  z-index: 999;
+}
+
+.dropdown-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  font-family: 'Patua One', sans-serif;
+  font-size: 16px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+}
+
+.main-content {
+  display: flex;
+  margin-top: 120px;
+  margin-bottom: 50px;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 200px;
+  height: 100vh;
+  background-color: #4E7C73;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* scroll jika isi sidebar panjang */
+  z-index: 1;
+}
+
+.menu-user-header {
+  font-size: 25px;
+  color: white;
+  display: flex;
+  align-items: center;
+  font-family: 'Patua One', cursive;
+  margin-right: 20px;
+  margin-left: 15px;
+}
+
+.menu-user-header i {
+  margin-right: 8px;
+  font-size: 24px;
+}
+
+.menu-middle {
+  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  font-family: 'Patua One', cursive;
+  color: white;
+  margin-left: 2px;
+  position: sticky;
+  top: 100px;
+  background-color: #4E7C73;
+  z-index: 2;
+  padding-top: 10px;
+  cursor: pointer;
+}
+
+.menu-middle i {
+  margin-right: 10px;
+  font-size: 24px;
+}
+
+.menu-plus, .menu-edit {
+  padding: 14px 16px;
+  font-size: 22px;
+  background-color: #4E7C73;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+.menu-plus i, .menu-edit i {
+  font-size: 26px;
+  margin-right: 12px;
+}
+
+.menu-plus:hover, .menu-edit:hover {
+  background-color: #D9E6E4;
+  color: black;
+  padding-left: 10px;
+  border-radius: 10px;
+}
+
+.dashboard-content {
+  flex: 1;
+  padding-left: 250px;
+  padding-top: 30px;
+  padding-right: 50px;
+}
+
+.chart {
+  margin-bottom: 30px;
+  background-color: #FBEDE9;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.product-table-wrapper {
+  background-color: #FBEDE9;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.product-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.product-table th, .product-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.product-table thead {
+  background-color: #f0d4c7;
+}
+
+.product-table tbody tr:nth-child(even) {
+  background-color: #fce7dd;
+}
