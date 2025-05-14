@@ -76,12 +76,12 @@ body {
  position: fixed;
     place-items: center;
     width : 300px;
-    height: 725px;
+    height: 540px;
     background-color : #4E7C73;
     margin-top : 30px;
     margin-left : 20px;
     border-radius: 25px;
-    padding-top: 30px;
+    padding-top: px;
 }
 
 .containerside {
@@ -116,7 +116,7 @@ body {
 .list-kategori li a {
   color: black;
   font-family: poly;
-  font-size: 25px;
+  font-size: 20px;
 }
 
 .list-kategori li a:hover {
@@ -128,7 +128,7 @@ body {
   align-items: center;
   gap: 8px;
   font-family: poly;
-  font-size: 25px;
+  font-size: 20px;
 }
 
 /* Produk Grid */
