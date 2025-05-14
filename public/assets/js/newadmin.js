@@ -1,3 +1,4 @@
+// Submit Form Handler
 document.querySelector('form').addEventListener('submit', function(e) {
   e.preventDefault();
 
@@ -33,9 +34,8 @@ document.querySelector('form').addEventListener('submit', function(e) {
   });
 });
 
-// Simple popup alert function
+// Custom Alert Pop-up
 function showAlert(message, type) {
-  // Remove existing alert if any
   const oldAlert = document.getElementById('custom-alert');
   if (oldAlert) oldAlert.remove();
 
@@ -60,7 +60,26 @@ function showAlert(message, type) {
   }, 3000);
 }
 
+// Show/Hide Password
 document.getElementById('togglePassword').addEventListener('change', function() {
   const passwordInput = document.getElementById('password');
   passwordInput.type = this.checked ? 'text' : 'password';
+});
+
+// Syarat Password Live Check
+const passwordInput = document.getElementById("password");
+passwordInput.addEventListener("input", function () {
+  const val = passwordInput.value;
+  document.getElementById("uppercase").checked = /[A-Z]/.test(val);
+  document.getElementById("lowercase").checked = /[a-z]/.test(val);
+  document.getElementById("number").checked = /\d/.test(val);
+  document.getElementById("special").checked = /[\W_]/.test(val);
+  document.getElementById("length").checked = val.length >= 8;
+});
+
+const toggle = document.getElementById('togglePassword');
+const password = document.getElementById('password');
+
+toggle.addEventListener('change', () => {
+  password.type = toggle.checked ? 'text' : 'password';
 });
