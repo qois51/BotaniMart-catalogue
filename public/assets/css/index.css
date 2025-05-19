@@ -74,25 +74,45 @@ body {
 /* Sidebar */
 .sidebar {
  position: fixed;
-    place-items: center;
-    width : 300px;
-    height: 540px;
-    background-color : #4E7C73;
-    margin-top : 30px;
-    margin-left : 20px;
-    border-radius: 25px;
-    padding-top: px;
+  width: 300px;
+  height: calc(100vh - 160px); /* Dinamis sesuai tinggi viewport, dikurangi header dan margin */
+  background-color: #4E7C73;
+  margin-top: 30px;
+  margin-left: 20px;
+  border-radius: 25px;
+  padding-top: 10px;
+  overflow: hidden; /* penting agar kontainer dalamnya tidak meluber */
+}
+
+/* Untuk animasi rotate icon dropdown */
+.rotate {
+  transform: rotate(180deg);
+  transition: transform 0.3s ease;
+}
+
+/* Subkategori sembunyi saat awal */
+.sub-kategori {
+  display: none;
+  padding-left: 20px;
+  margin-top: 5px;
+}
+
+.sub-kategori.show {
+  display: block;
 }
 
 .containerside {
-  background-color: white;
+   background-color: white;
   width: 92%;
-  height: 94%;
+  height: 93%;
   margin: 15px auto;
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   font-size: 18px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* scroll vertikal jika isi terlalu panjang */
 }
 
 .section-title {
@@ -102,14 +122,12 @@ body {
   font-family: poly;
 }
 
-.list-kategori,
-.list-filter {
+.list-kategori{
   padding-left: 15px;
   margin-top: 5px;
 }
 
-.list-kategori li,
-.list-filter li {
+.list-kategori li{
   margin-bottom: 10px;
 }
 
@@ -123,13 +141,44 @@ body {
   text-decoration: underline;
 }
 
-.list-filter li {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: poly;
-  font-size: 20px;
+
+/* Sub-kategori dropdown */
+.sub-kategori {
+  display: none;
+  padding-left: 20px;
+  margin-top: 5px;
 }
+
+.dropdown {
+  margin-bottom: 10px;
+}
+
+.dropdown-btn {
+    background: none;
+  border: none;
+  color: black;
+  font-size: 20px;
+  font-family: poly;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between; /* Ini membuat ikon ke kanan */
+  align-items: center;
+  width: 100%;
+  padding: 5px 10px;
+}
+
+.dropdown-btn i {
+  transition: transform 0.3s ease;
+}
+
+.dropdown.active .sub-kategori {
+  display: block;
+}
+
+.dropdown.active .dropdown-btn i {
+  transform: rotate(180deg);
+}
+
 
 /* Produk Grid */
 .produk-container {
