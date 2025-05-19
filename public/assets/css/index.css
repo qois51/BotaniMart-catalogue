@@ -65,6 +65,30 @@ body {
   border-left: 1px solid #4E7C73;
 }
 
+.search-history {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  border: 1px solid #ccc;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 999;
+  display: none;
+  border-radius: 0 0 10px 10px;
+}
+
+.history-item {
+  padding: 10px 15px;
+  cursor: pointer;
+}
+
+.history-item:hover {
+  background-color: #f0f0f0;
+}
+
+
 /* Main layout */
 .main-container {
   display: flex;
