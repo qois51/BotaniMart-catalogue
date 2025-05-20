@@ -1,16 +1,14 @@
-const { db } = require('./db/db');
+const path = require('./config/paths');
+const { Product } = require(path.db);
 
-async function queryAdmins() {
-    try {
-        const admins = await db.selectFrom('products').selectAll().execute();
-
-        console.log('Admins:', admins);
-    } catch (error) {
-        console.error('Failed to query admins:', error);
-        process.exit(1);
-    } finally {
-        db.destroy();
-    }
+async function getAllProducts() {
+  try {
+    const products = await Product.findAll();
+    console.log('Fetched products:', products.map(product => product.toJSON()));
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    throw error;
+  }
 }
 
-queryAdmins();
+getAllProducts();

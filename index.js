@@ -61,6 +61,29 @@ app.get('/products', async (req, res) => {
   }
 });
 
+
+// Route for getting a product by ID (using path parameter)
+app.get('/products/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    
+    if (isNaN(id)) {
+      return res.status(400).json({ error: 'Parameter ID tidak valid.' });
+    }
+    
+    const product = await queryProducts(id);
+    
+    if (!product) {
+      return res.status(404).json({ error: 'Produk tidak ditemukan.' });
+    }
+    
+    res.json(product);
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 // Notify browser on changes
 liveReloadServer.server.once("connection", () => {
   setTimeout(() => {

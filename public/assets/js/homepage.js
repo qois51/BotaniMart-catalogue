@@ -22,6 +22,9 @@ document.addEventListener("DOMContentLoaded", function () {
   async function fetchAndRenderProducts() {
     try {
       const response = await fetch('/products');
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
       allProducts = await response.json();
       renderProducts(allProducts);
     } catch (error) {
@@ -30,47 +33,53 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function renderProducts(products) {
-    const produkRow = document.querySelector('.produk-row');
-    produkRow.innerHTML = products.map(product => `
-      <a href="views/product-details.html?id=${product.id_product}" class="produk-link">
-        <div class="produk">
-          <img src="${product.product_picture || '../uploads/default.png'}" alt="${product.product_name}">
-          <p>${product.product_name}</p>
-          <p class="harga">Rp ${parseInt(product.product_price).toLocaleString('id-ID')}</p>
-        </div>
-      </a>
-    `).join('');
+      const produkRow = document.querySelector('.produk-row');
+      const basePath = '../uploads/'; 
+
+      produkRow.innerHTML = products.map(product => {
+          console.log(product.id);
+          const imageUrl = product.gambarUtama ? basePath + product.gambarUtama : '../uploads/default.png';
+          return `
+              <a href="views/product-details.html?id=${product.id}" class="produk-link">
+                  <div class="produk">
+                      <img src="${imageUrl}" alt="${product.namaProduk}">
+                      <p>${product.namaProduk}</p>
+                      <p class="harga">Rp ${parseInt(product.hargaProduk).toLocaleString('id-ID')}</p>
+                  </div>
+              </a>
+          `;
+      }).join('');
   }
 
   // === LIVE SEARCH DROPDOWN ===
   function renderLiveSearchDropdown(filteredProducts) {
-  historyDropdown.innerHTML = '';
+    historyDropdown.innerHTML = '';
 
-  if (filteredProducts.length === 0) {
-    historyDropdown.style.display = 'none';
-    return;
-  }
+    if (filteredProducts.length === 0) {
+      historyDropdown.style.display = 'none';
+      return;
+    }
 
-  filteredProducts.slice(0, 5).forEach(product => {
-    const item = document.createElement('div');
-    item.className = 'dropdown-item';
-    item.textContent = product.product_name;
+    filteredProducts.slice(0, 5).forEach(product => {
+      const item = document.createElement('div');
+      item.className = 'dropdown-item';
+      item.textContent = product.namaProduk;
 
-    // Tambahkan event listener untuk redirect ke halaman detail
-    item.addEventListener('click', () => {
-      window.location.href = `views/product-details.html?id=${product.id_product}`;
+      // Tambahkan event listener untuk redirect ke halaman detail
+      item.addEventListener('click', () => {
+        window.location.href = `views/product-details.html?id=${product.id}`;
+      });
+
+      historyDropdown.appendChild(item);
     });
 
-    historyDropdown.appendChild(item);
-  });
-
-  historyDropdown.style.display = 'block';
-}
+    historyDropdown.style.display = 'block';
+  }
 
   // === FUNGSI PENCARIAN ===
   function searchProducts(keyword) {
     const filtered = allProducts.filter(product => 
-      product.product_name.toLowerCase().includes(keyword.toLowerCase())
+      product.namaProduk.toLowerCase().includes(keyword.toLowerCase())
     );
     renderProducts(filtered);
   }
@@ -93,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
   searchInput.addEventListener('input', () => {
     const keyword = searchInput.value.trim();
     const filtered = allProducts.filter(product =>
-      product.product_name.toLowerCase().includes(keyword.toLowerCase())
+      product.namaProduk.toLowerCase().includes(keyword.toLowerCase())
     );
     renderLiveSearchDropdown(filtered);
   });
