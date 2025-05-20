@@ -37,7 +37,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const basePath = '../uploads/'; 
 
       produkRow.innerHTML = products.map(product => {
-          console.log(product.id);
           const imageUrl = product.gambarUtama ? basePath + product.gambarUtama : '../uploads/default.png';
           return `
               <a href="views/product-details.html?id=${product.id}" class="produk-link">
@@ -113,6 +112,194 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  // === FILTER FUNCTIONS ===
+  function renderCategories(categoriesMain, categoriesSub) {
+    const categoryListContainer = document.querySelector('.list-kategori');
+
+    // Remove existing categories
+    while (categoryListContainer && categoryListContainer.firstChild) {
+      categoryListContainer.removeChild(categoryListContainer.firstChild);
+    }
+
+    // Show all button
+    const showAllItem = document.createElement('li');
+    const showAllBtn = document.createElement('button');
+    showAllBtn.className = 'dropdown-btn';
+    showAllBtn.textContent = 'Tampilkan Semua Produk';
+    showAllBtn.addEventListener('click', () => {
+      renderProducts(allProducts);
+      resetActiveCategories();
+      showAllBtn.classList.add('active');
+    });
+    showAllItem.appendChild(showAllBtn);
+    categoryListContainer.appendChild(showAllItem);
+
+    // Group subcategories by main category
+    const categoryMap = {};
+    categoriesMain.forEach(main => {
+      categoryMap[main] = [];
+    });
+  
+    allProducts.forEach(product => {
+      if (product.kategoriMain && product.kategoriSub) {
+        if (!categoryMap[product.kategoriMain].includes(product.kategoriSub)) {
+          categoryMap[product.kategoriMain].push(product.kategoriSub);
+        }
+      }
+    });
+
+    // Create HTML elements for each main category and its subcategories
+    categoriesMain.forEach(mainCategory => {
+      const mainCategoryItem = document.createElement('li');
+      mainCategoryItem.className = 'dropdown';
+
+      const dropdownBtn = document.createElement('button');
+      dropdownBtn.className = 'dropdown-btn';
+      dropdownBtn.innerHTML = `${mainCategory} <i class="fas fa-caret-down"></i>`;
+    
+      // Add click handler for dropdown toggle only (no filtering)
+      dropdownBtn.addEventListener('click', function(e) {
+        // Toggle dropdown visibility
+        this.classList.toggle('dropdown-open');
+        const icon = this.querySelector('.fa-caret-down');
+        icon.classList.toggle('rotate');
+        const subMenu = this.nextElementSibling;
+        if (subMenu.style.display === 'block') {
+          subMenu.style.display = 'none';
+        } else {
+          subMenu.style.display = 'block';
+        }
+      });
+
+      const subCategoryList = document.createElement('ul');
+      subCategoryList.className = 'sub-kategori';
+      subCategoryList.style.display = 'none'; // Hidden by default
+
+      const allOption = document.createElement('li');
+      const allLink = document.createElement('a');
+      allLink.href = '#';
+      allLink.textContent = 'All';
+      allLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        const filtered = allProducts.filter(product => 
+          product.kategoriMain === mainCategory
+        );
+        renderProducts(filtered);
+        resetActiveSubcategories();
+        allLink.classList.add('active-subcategory');
+      });
+      allOption.appendChild(allLink);
+      subCategoryList.appendChild(allOption);
+
+      categoryMap[mainCategory].forEach(subCategory => {
+        const subCategoryItem = document.createElement('li');
+        const subCategoryLink = document.createElement('a');
+        subCategoryLink.href = '#';
+        subCategoryLink.textContent = subCategory;
+
+        subCategoryLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          const filtered = allProducts.filter(product => 
+            product.kategoriMain === mainCategory && 
+            product.kategoriSub === subCategory
+          );
+          renderProducts(filtered);
+          resetActiveSubcategories();
+          subCategoryLink.classList.add('active-subcategory');
+        });
+
+        subCategoryItem.appendChild(subCategoryLink);
+        subCategoryList.appendChild(subCategoryItem);
+      });
+
+      mainCategoryItem.appendChild(dropdownBtn);
+      mainCategoryItem.appendChild(subCategoryList);
+
+      categoryListContainer.appendChild(mainCategoryItem);
+    });
+  }
+
+  // Helper function to reset active state of all category buttons
+  function resetActiveCategories() {
+    document.querySelectorAll('.dropdown-btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+  }
+
+  // Helper function to reset active state of all subcategory links
+  function resetActiveSubcategories() {
+    document.querySelectorAll('.sub-kategori a').forEach(link => {
+      link.classList.remove('active-subcategory');
+    });
+  }
+
+  // Filter products function that can be used elsewhere in the code
+  function filterProducts(mainCategory = null, subCategory = null) {
+    let filtered;
+  
+    if (mainCategory && subCategory) {
+      // Filter by both main category and subcategory
+      filtered = allProducts.filter(product => 
+        product.kategoriMain === mainCategory && 
+        product.kategoriSub === subCategory
+      );
+    } else if (mainCategory) {
+      // Filter by main category only
+      filtered = allProducts.filter(product => 
+        product.kategoriMain === mainCategory
+      );
+    } else {
+      // No filter, show all products
+      filtered = allProducts;
+    }
+  
+    renderProducts(filtered);
+  
+    // Update UI to show which category is active
+    resetActiveCategories();
+    resetActiveSubcategories();
+  
+    if (mainCategory) {
+      // Find and activate the corresponding category button
+      document.querySelectorAll('.dropdown-btn').forEach(btn => {
+        if (btn.textContent.includes(mainCategory)) {
+          btn.classList.add('active');
+        }
+      });
+    
+      if (subCategory) {
+        // Find and activate the corresponding subcategory link
+        document.querySelectorAll('.sub-kategori a').forEach(link => {
+          if (link.textContent === subCategory) {
+            link.classList.add('active-subcategory');
+          }
+        });
+      }
+    } else {
+      // No category selected, activate "Show All" button
+      document.querySelector('.show-all-btn')?.classList.add('active');
+    }
+  }
+
+
+  async function getCategory() {
+    try {
+      const response = await fetch('/products');
+      if (!response.ok) {
+        throw new Error('Failed to fetch categories');
+      }
+      const temp = await response.json();
+      const categoriesMain = [...new Set(temp.map(product => product.kategoriMain))];
+      const categoriesSub = [...new Set(temp.map(product => product.kategoriSub))];
+
+      renderCategories(categoriesMain, categoriesSub);
+
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  }
+
   // === INISIALISASI ===
   fetchAndRenderProducts();
+  getCategory();
 });

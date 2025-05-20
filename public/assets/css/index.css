@@ -305,3 +305,18 @@ body {
 .float-btn:hover {
   opacity: 0.8;
 }
+
+/* Add these styles to your CSS file */
+.dropdown-btn.active {
+  background-color: #e8f5e9;
+  font-weight: bold;
+}
+
+.dropdown-btn.dropdown-open {
+  border-bottom: 1px solid #ddd;
+}
+
+.active-subcategory {
+  font-weight: bold;
+  color: #4CAF50;
+}
