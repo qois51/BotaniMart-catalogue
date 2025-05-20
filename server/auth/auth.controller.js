@@ -1,6 +1,7 @@
+const { Op } = require('sequelize');
 const jwt = require('jsonwebtoken');
 const PATHS = require('../../config/paths');
-const { db } = require(PATHS.db);
+const { Admin } = require(PATHS.db);
 
 // Improved password validation with detailed error
 function isValidPassword(password) {
@@ -29,10 +30,9 @@ exports.login = async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    const user = await db.selectFrom('admins')
-      .where('username', '=', username)
-      .selectAll()
-      .executeTakeFirst();
+    const user = await Admin.findOne({
+      where: { username }
+    });
 
     if (!user) {
       return res.status(400).json({ error: 'Username tidak ditemukan' });
@@ -42,7 +42,7 @@ exports.login = async (req, res) => {
       return res.status(400).json({ error: 'Password salah' });
     }
 
-    const token = jwt.sign({ userId: user.id, username: user.username }, 'secretkey', {
+    const token = jwt.sign({ userId: user.username, username: user.username }, 'secretkey', {
       expiresIn: '24h',
     });
 
@@ -61,10 +61,9 @@ exports.checkEmailReset = async (req, res) => {
   }
 
   try {
-    const user = await db.selectFrom('admins')
-      .where('email', '=', email)
-      .selectAll()
-      .executeTakeFirst();
+    const user = await Admin.findOne({
+      where: { email }
+    });
 
     if (!user) {
       return res.status(404).json({ error: 'Email tidak ditemukan' });
@@ -91,22 +90,21 @@ exports.setNewPassword = async (req, res) => {
   }
 
   try {
-    const user = await db.selectFrom('admins')
-      .where('email', '=', email)
-      .selectAll()
-      .executeTakeFirst();
+    const user = await Admin.findOne({
+      where: { email }
+    });
 
     if (!user) {
       return res.status(404).json({ error: 'Email tidak ditemukan' });
     }
 
     // Update password
-    const result = await db.updateTable('admins')
-      .set({ password: newPassword })
-      .where('email', '=', email)
-      .execute();
+    const [numUpdated] = await Admin.update(
+      { password: newPassword },
+      { where: { email } }
+    );
 
-    if (result.numUpdatedRows === 0) {
+    if (numUpdated === 0) {
       return res.status(404).json({ error: 'Email tidak ditemukan' });
     }
 
@@ -136,26 +134,28 @@ exports.register = async (req, res) => {
   }
 
   try {
-    const existingUser = await db.selectFrom('admins')
-      .where((eb) =>
-        eb('username', '=', username).or('email', '=', email)
-      )
-      .selectAll()
-      .executeTakeFirst();
+    const existingUser = await Admin.findOne({
+      where: {
+        [Op.or]: [{ username }, { email }]
+      }
+    });
 
     if (existingUser) {
       console.log('[REGISTER] Username or email already exists:', existingUser);
       return res.status(400).json({ error: 'Username atau email sudah terdaftar' });
     }
 
-    var name = fullName
+    var name = fullName;
 
     // Insert new user
-    const result = await db.insertInto('admins')
-      .values({ username, name, email, password })
-      .execute();
+    const newAdmin = await Admin.create({
+      username,
+      name,
+      email,
+      password
+    });
 
-    console.log('[REGISTER] Insert result:', result);
+    console.log('[REGISTER] Insert result:', newAdmin);
 
     res.json({ message: 'Registrasi berhasil' });
   } catch (err) {

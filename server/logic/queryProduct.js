@@ -1,25 +1,22 @@
 const PATHS = require('../../config/paths');
-const { db } = require(PATHS.db);
+const { Product } = require(PATHS.db);
 
 async function queryProducts(id = null) {
     try {
+        let result;
+
         if (id !== null) {
-            const product = await db
-                .selectFrom('products')
-                .selectAll()
-                .where('id_product', '=', id)
-                .executeTakeFirst();
-            return product;
+            // Find a single product by id
+            result = await Product.findByPk(id);
         } else {
-            const products = await db
-                .selectFrom('products')
-                .selectAll()
-                .execute();
-            return products;
+            // Find all products
+            result = await Product.findAll();
         }
+
+        return result;
     } catch (error) {
         console.error('Failed to query products:', error);
-        process.exit(1);
+        throw error; // Rethrow the error for handling by the caller
     }
 }
 
