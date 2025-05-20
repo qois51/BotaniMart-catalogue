@@ -181,7 +181,7 @@ body {
 
 .description {
     width: 650px;
-    height: 320px;
+    height: 250px;
     border-radius: 10px;
     background-color: white;
     color: #555;
@@ -208,7 +208,7 @@ body {
     color: white;
     cursor: pointer;
     margin-bottom: 0.7rem;
-    margin-right: 6rem;
+    margin-right: 47.6rem;
 }
 
 .add-product:hover{
