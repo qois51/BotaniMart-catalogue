@@ -39,9 +39,10 @@ body {
   align-items: center;
   background-color: white;
   border-radius: 30px;
-  overflow: hidden;
+  overflow: visible;
   height: 43px;
   width: 45%;
+  position: relative;
 }
 
 .search_bar input {
@@ -65,8 +66,32 @@ body {
   border-left: 1px solid #4E7C73;
 }
 
+.search-history {
+  position: absolute;
+  top: 45px;
+  left: 0;
+  width: 100%;
+  background: white;
+  border: 1px solid #ccc;
+  border-top: none;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  display: none;
+}
 
+.dropdown-item {
+  padding: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #333;
+}
 
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+}
 
 /* Main layout */
 .main-container {
@@ -76,7 +101,7 @@ body {
 
 /* Sidebar */
 .sidebar {
- position: fixed;
+  position: fixed;
   width: 300px;
   height: calc(100vh - 160px); /* Dinamis sesuai tinggi viewport, dikurangi header dan margin */
   background-color: #4E7C73;
@@ -105,7 +130,7 @@ body {
 }
 
 .containerside {
-   background-color: white;
+  background-color: white;
   width: 92%;
   height: 93%;
   margin: 15px auto;
@@ -144,7 +169,6 @@ body {
   text-decoration: underline;
 }
 
-
 /* Sub-kategori dropdown */
 .sub-kategori {
   display: none;
@@ -157,7 +181,7 @@ body {
 }
 
 .dropdown-btn {
-    background: none;
+  background: none;
   border: none;
   color: black;
   font-size: 20px;
@@ -181,7 +205,6 @@ body {
 .dropdown.active .dropdown-btn i {
   transform: rotate(180deg);
 }
-
 
 /* Produk Grid */
 .produk-container {
@@ -208,22 +231,18 @@ body {
 
 .produk p {
   margin-top: 0;
-
   font-size: 25px !important; /* Menggunakan !important untuk memastikan ukuran font diterapkan */
   color: #333;
-
   font-family: poly;
 }
 
 .produk .harga {
-    margin-top: 5px;
-    color: #333 !important;
-  font-size: 25px !important; /* Menggunakan !important untuk memastikan ukuran font diterapkan */
+  margin-top: 5px;
   color: #333 !important;
+  font-size: 25px !important; /* Menggunakan !important untuk memastikan ukuran font diterapkan */
   font-weight: bold;
-    font-family: poly;
+  font-family: poly;
 }
-
 
 .produk img {
   width: 100%;
@@ -231,7 +250,6 @@ body {
   object-fit: cover;
   border-radius: 10px;
   transition: transform 0.3s ease;
-  margin-bottom: px;
 }
 
 .produk img:hover {
@@ -287,4 +305,3 @@ body {
 .float-btn:hover {
   opacity: 0.8;
 }
-
