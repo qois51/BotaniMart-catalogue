@@ -44,27 +44,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // === LIVE SEARCH DROPDOWN ===
   function renderLiveSearchDropdown(filteredProducts) {
-    historyDropdown.innerHTML = '';
+  historyDropdown.innerHTML = '';
 
-    if (filteredProducts.length === 0) {
-      historyDropdown.style.display = 'none';
-      return;
-    }
+  if (filteredProducts.length === 0) {
+    historyDropdown.style.display = 'none';
+    return;
+  }
 
-    filteredProducts.slice(0, 5).forEach(product => {
-      const item = document.createElement('div');
-      item.className = 'dropdown-item';
-      item.textContent = product.product_name;
-      item.addEventListener('click', () => {
-        searchInput.value = product.product_name;
-        searchProducts(product.product_name);
-        historyDropdown.style.display = 'none';
-      });
-      historyDropdown.appendChild(item);
+  filteredProducts.slice(0, 5).forEach(product => {
+    const item = document.createElement('div');
+    item.className = 'dropdown-item';
+    item.textContent = product.product_name;
+
+    // Tambahkan event listener untuk redirect ke halaman detail
+    item.addEventListener('click', () => {
+      window.location.href = `views/product-details.html?id=${product.id_product}`;
     });
 
-    historyDropdown.style.display = 'block';
-  }
+    historyDropdown.appendChild(item);
+  });
+
+  historyDropdown.style.display = 'block';
+}
 
   // === FUNGSI PENCARIAN ===
   function searchProducts(keyword) {
