@@ -1,11 +1,16 @@
-const livereload = require('livereload');
-const connectLivereload = require('connect-livereload');
+const path = require('path');
+const PATHS = require('./config/paths')
+
 const express = require('express');
 const bodyParser = require('body-parser');
-const path = require('path');
 
-const PATHS = require('./config/paths')
+const { configureSession, requireAuth, requireAdmin } = require(path.join(PATHS.server, 'auth', 'auth.middleware.js'));
+
 const authRoutes = require(path.join(PATHS.server, 'auth', 'auth.routes.js'))
+
+const livereload = require('livereload');
+const connectLivereload = require('connect-livereload');
+
 const { queryProducts } = require(path.join(PATHS.server, 'logic', 'queryProduct.js'));
 
 const app = express();
@@ -18,6 +23,9 @@ app.use(connectLivereload());
 
 // Middleware to parse JSON
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true })); 
+
+configureSession(app);
 
 // Serve static files
 app.use(express.static(path.join(PATHS.public)));
@@ -38,6 +46,20 @@ app.get('/newadmin', (req, res) => {
 
 // Auth routes
 app.use('/auth', authRoutes);
+
+// Route to get current user information
+app.get('/auth/current-user', (req, res) => {
+  if (req.session && req.session.user) {
+    res.json({ 
+      loggedIn: true, 
+      user: req.session.user 
+    });
+  } else {
+    res.json({ 
+      loggedIn: false 
+    });
+  }
+});
 
 // Products route
 app.get('/products', async (req, res) => {
