@@ -81,14 +81,20 @@ function updateProductDetails(data) {
         // Add additional images if they exist
         if (data.gambarKedua) {
             addPreviewImage(previewContainer, data.gambarKedua, 'main2', imageBaseUrl);
+        } else {
+            addPreviewImage(previewContainer, 'default-image.jpg', 'main2', imageBaseUrl);
         }
-        
+
         if (data.gambarKetiga) {
             addPreviewImage(previewContainer, data.gambarKetiga, 'main3', imageBaseUrl);
+        } else {
+            addPreviewImage(previewContainer, 'default-image.jpg', 'main3', imageBaseUrl);
         }
-        
+
         if (data.gambarKeempat) {
             addPreviewImage(previewContainer, data.gambarKeempat, 'main4', imageBaseUrl);
+        } else {
+            addPreviewImage(previewContainer, 'default-image.jpg', 'main4', imageBaseUrl);
         }
     }
     
