@@ -125,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const showAllItem = document.createElement('li');
     const showAllBtn = document.createElement('button');
     showAllBtn.className = 'dropdown-btn';
-    showAllBtn.textContent = 'Tampilkan Semua Produk';
+    showAllBtn.textContent = 'Semua Produk';
     showAllBtn.addEventListener('click', () => {
       renderProducts(allProducts);
       resetActiveCategories();
