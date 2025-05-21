@@ -1,35 +1,116 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Get product ID from URL parameter
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get('id');
-    
-    if (!id) {
-        console.error("ID produk tidak ditemukan di URL.");
-        return;
-    }
-    
-    // Fetch product data
-    fetchProductData(id);
-});
+document.addEventListener('DOMContentLoaded', async () => {
+  // === Ambil ID Produk dari URL ===
+  const urlParams = new URLSearchParams(window.location.search);
+  const id = urlParams.get('id');
 
-async function fetchProductData(productId) {
+  if (!id) {
+    console.error("ID produk tidak ditemukan di URL.");
+    return;
+  }
+
+  fetchProductData(id);
+
+  // === LIVE SEARCH DROPDOWN ===
+  let allProducts = [];
+  const searchInput = document.querySelector('.search_bar input');
+  const searchBar = document.querySelector('.search_bar');
+  const historyDropdown = document.createElement('div');
+  historyDropdown.className = 'search-history';
+  searchBar.appendChild(historyDropdown);
+
   try {
-    // Fetch product data from API using GET with ID parameter
-    const response = await fetch(`/products/${productId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      }
+    const response = await fetch('/products');
+    if (!response.ok) throw new Error('Failed to fetch products');
+    allProducts = await response.json();
+  } catch (err) {
+    console.error('Error fetching products for search:', err);
+  }
+
+  function renderLiveSearchDropdown(filteredProducts) {
+    historyDropdown.innerHTML = '';
+
+    if (filteredProducts.length === 0) {
+      historyDropdown.style.display = 'none';
+      searchBar.classList.remove('dropdown-active');
+      return;
+    }
+
+    filteredProducts.slice(0, 5).forEach(product => {
+      const item = document.createElement('div');
+      item.className = 'dropdown-item';
+      item.textContent = product.namaProduk;
+      item.addEventListener('click', () => {
+        window.location.href = `product-details.html?id=${product.id}`;
+      });
+      historyDropdown.appendChild(item);
     });
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch product data: ${response.status}`);
+    historyDropdown.style.display = 'block';
+    searchBar.classList.add('dropdown-active');
+  }
+
+  function searchProducts(keyword) {
+    const filtered = allProducts.filter(product =>
+      product.namaProduk.toLowerCase().includes(keyword.toLowerCase())
+    );
+    renderLiveSearchDropdown(filtered);
+  }
+
+  document.querySelector('.search-btn').addEventListener('click', () => {
+    const keyword = searchInput.value.trim();
+    const result = allProducts.find(product =>
+      product.namaProduk.toLowerCase().includes(keyword.toLowerCase())
+    );
+    if (result) {
+      window.location.href = `product-details.html?id=${result.id}`;
+    } else {
+      alert("Produk tidak ditemukan.");
     }
+    historyDropdown.style.display = 'none';
+    searchBar.classList.remove('dropdown-active');
+  });
+
+  searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      const keyword = searchInput.value.trim();
+      const result = allProducts.find(product =>
+        product.namaProduk.toLowerCase().includes(keyword.toLowerCase())
+      );
+      if (result) {
+        window.location.href = `product-details.html?id=${result.id}`;
+      } else {
+        alert("Produk tidak ditemukan.");
+      }
+      historyDropdown.style.display = 'none';
+      searchBar.classList.remove('dropdown-active');
+    }
+  });
+
+  searchInput.addEventListener('input', () => {
+    const keyword = searchInput.value.trim();
+    searchProducts(keyword);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!searchBar.contains(e.target)) {
+      historyDropdown.style.display = 'none';
+      searchBar.classList.remove('dropdown-active');
+    }
+  });
+});
+
+// === FETCH & UPDATE DETAIL PRODUK ===
+async function fetchProductData(productId) {
+  try {
+    const response = await fetch(`/products/${productId}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    if (!response.ok) throw new Error(`Failed to fetch product data: ${response.status}`);
 
     const data = await response.json();
-    console.log("Product data received:", data); // Debug log
 
-    // Update product details in the DOM
     updateProductDetails({
       name: data.namaProduk,
       price: data.hargaProduk,
@@ -43,88 +124,63 @@ async function fetchProductData(productId) {
     });
   } catch (error) {
     console.error('Gagal mengambil data produk:', error);
-    document.getElementById('product-container').innerHTML = 
+    document.getElementById('product-container').innerHTML =
       `<div class="error-message">Error: ${error.message}</div>`;
   }
 }
 
 function updateProductDetails(data) {
-    const mainImage = document.getElementById('main-image');
-    const titleElement = document.getElementById('product-name');
-    const typeElement = document.getElementById('product-type');
-    const stockElement = document.getElementById('stok-info');
-    const priceElement = document.getElementById('product-price');
-    const descriptionElement = document.getElementById('product-desc');
-    
-    // Update image source with full path
-    const imageBaseUrl = '/uploads/'; 
-    mainImage.src = data.picture ? `${imageBaseUrl}${data.picture}` : '../uploads/default.png';
-    
-    // Handle additional images if they exist
-    const previewContainer = document.querySelector('.gambar-preview');
-    
-    // Clear existing preview images
-    if (previewContainer) {
-        previewContainer.innerHTML = '';
-        
-        // Add main image to preview
-        const mainPreview = document.createElement('img');
-        mainPreview.src = mainImage.src;
-        mainPreview.id = 'main1';
-        mainPreview.className = 'preview-img active';
-        mainPreview.onclick = function() {
-            mainImage.src = this.src;
-            setActivePreview(this);
-        };
-        previewContainer.appendChild(mainPreview);
-        
-        // Add additional images if they exist
-        if (data.gambarKedua) {
-            addPreviewImage(previewContainer, data.gambarKedua, 'main2', imageBaseUrl);
-        } else {
-            addPreviewImage(previewContainer, 'default-image.jpg', 'main2', imageBaseUrl);
-        }
+  const mainImage = document.getElementById('main-image');
+  const titleElement = document.getElementById('product-name');
+  const typeElement = document.getElementById('product-type');
+  const stockElement = document.getElementById('stok-info');
+  const priceElement = document.getElementById('product-price');
+  const descriptionElement = document.getElementById('product-desc');
 
-        if (data.gambarKetiga) {
-            addPreviewImage(previewContainer, data.gambarKetiga, 'main3', imageBaseUrl);
-        } else {
-            addPreviewImage(previewContainer, 'default-image.jpg', 'main3', imageBaseUrl);
-        }
+  const imageBaseUrl = '/uploads/';
+  mainImage.src = data.picture ? `${imageBaseUrl}${data.picture}` : '../uploads/default.png';
 
-        if (data.gambarKeempat) {
-            addPreviewImage(previewContainer, data.gambarKeempat, 'main4', imageBaseUrl);
-        } else {
-            addPreviewImage(previewContainer, 'default-image.jpg', 'main4', imageBaseUrl);
-        }
-    }
-    
-    // Update product details
-    titleElement.textContent = data.name;
-    typeElement.textContent = data.category;
-    stockElement.textContent = `Stok: ${data.stock}`;
-    priceElement.textContent = `Rp${parseInt(data.price).toLocaleString('id-ID')}`;
-    descriptionElement.textContent = data.description;
-}
+  const previewContainer = document.querySelector('.gambar-preview');
+  if (previewContainer) {
+    previewContainer.innerHTML = '';
 
-// Helper function to add preview images
-function addPreviewImage(container, imagePath, id, baseUrl) {
-    const preview = document.createElement('img');
-    preview.src = `${baseUrl}${imagePath}`;
-    preview.id = id;
-    preview.className = 'preview-img';
-    preview.onclick = function() {
-        document.getElementById('main-image').src = this.src;
-        setActivePreview(this);
+    const mainPreview = document.createElement('img');
+    mainPreview.src = mainImage.src;
+    mainPreview.id = 'main1';
+    mainPreview.className = 'preview-img active';
+    mainPreview.onclick = function () {
+      mainImage.src = this.src;
+      setActivePreview(this);
     };
-    container.appendChild(preview);
+    previewContainer.appendChild(mainPreview);
+
+    addPreviewImage(previewContainer, data.gambarKedua || 'default-image.jpg', 'main2', imageBaseUrl);
+    addPreviewImage(previewContainer, data.gambarKetiga || 'default-image.jpg', 'main3', imageBaseUrl);
+    addPreviewImage(previewContainer, data.gambarKeempat || 'default-image.jpg', 'main4', imageBaseUrl);
+  }
+
+  titleElement.textContent = data.name;
+  typeElement.textContent = data.category;
+  stockElement.textContent = `Stok: ${data.stock}`;
+  priceElement.textContent = `Rp${parseInt(data.price).toLocaleString('id-ID')}`;
+  descriptionElement.textContent = data.description;
 }
 
-// Helper function to set active preview
+function addPreviewImage(container, imagePath, id, baseUrl) {
+  const preview = document.createElement('img');
+  preview.src = `${baseUrl}${imagePath}`;
+  preview.id = id;
+  preview.className = 'preview-img';
+  preview.onclick = function () {
+    document.getElementById('main-image').src = this.src;
+    setActivePreview(this);
+  };
+  container.appendChild(preview);
+}
+
 function setActivePreview(activeElement) {
-    // Remove active class from all preview images
-    document.querySelectorAll('.preview-img').forEach(img => {
-        img.classList.remove('active');
-    });
-    // Add active class to clicked image
-    activeElement.classList.add('active');
+  document.querySelectorAll('.preview-img').forEach(img => {
+    img.classList.remove('active');
+  });
+  activeElement.classList.add('active');
 }

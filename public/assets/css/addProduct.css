@@ -10,7 +10,7 @@
 }
 
 body {
-  font-family: 'Pattaya', sans-serif;
+  font-family: 'Poly', sans-serif;
 }
 
 .header {
@@ -31,47 +31,31 @@ body {
 }
 
 .judul {
+  display: flex;
+  align-items: center;
   font-size: 40px;
   color: white;
+  gap: 15px; /* memberi jarak antara gambar dan teks jika ada */
 }
 
-.search_bar {
-    display: flex;
-    align-items: center;
-    background-color: white;
-    border-radius: 30px;
-    overflow: hidden;
-    height: 43px;
-    width: 45%;
-    }
-  
-.search_bar input {
-    border: none;
-    padding-left: 20px;
-    outline: none;
-    border-radius: 0;
-    font-size: 17px;
-    flex: 1;
-  }
-  
-.search-btn {
-    background-color: #3B9F9F;
-    border: none;
-    padding-right: 18px;
-    padding-left: 18px;
-    height: 100%;
-    cursor: pointer;
-    color: white;
-    font-size: 20px;
-    display: flex;
-    align-items: center;
-    border-left: 1px solid #4E7C73;
-    transition: background-color 0.2s ease;
+.judul img.logo {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+  background-color: #ffffffcc; /* putih semi-transparan */
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1); /* opsional untuk efek lembut */
 }
-  
-  .search-btn:hover {
-    background-color: #5c9089;
-  }
+
+.profile-icon {
+    font-size: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  color: white !important;
+  margin-right: 15px;
+}
 
   .container {
     display: flex;
@@ -149,14 +133,13 @@ body {
 }
 
 .input-chip {
-    
     border-radius: 10px;
     background-color: white;
-     border-style: solid;
+    border-style: solid;
     color: #555;
     width: 206px;
     height: 60px;
-    font-family: sans-serif;
+    font-family: 'Poly';
     font-size: 20px;
     padding: 1rem;
     border-width: 1px;
@@ -173,7 +156,7 @@ body {
     color: #555;
     width: 650px;
     height: 60px;
-    font-family: sans-serif;
+    font-family: 'Poly';
     font-size: 20px;
     padding: 1rem;
     margin-top: 0.8rem;
@@ -186,7 +169,7 @@ body {
     background-color: white;
     color: #555;
     padding: 1rem;
-    font-family: sans-serif;
+    font-family: 'Poly';
     border-width: 1px;
     border-color: #333;
     border-style: solid;
@@ -196,21 +179,18 @@ body {
 
 
 .add-product {
-    position: fixed;
-    right: 2rem;
-    bottom: 2rem;
     background-color: #4E7C73;
     border: none;
-    width: 125px;
+    width: 150px;
     height: 60px;
     border-radius: 10px;
-    font-size: 18px;
+    font-size: 20px;
     color: white;
     cursor: pointer;
-    margin-bottom: 0.7rem;
-    margin-right: 47.6rem;
+    margin-top: 0.8rem; /* jarak dari atas */
+    font-family: 'Poly';
 }
 
-.add-product:hover{
+.add-product:hover {
     background-color: #3B9F9F;
 }
