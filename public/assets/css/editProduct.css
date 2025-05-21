@@ -31,12 +31,25 @@ body {
 }
 
 .judul {
+  display: flex;
+  align-items: center;
   font-size: 40px;
   color: white;
+  gap: 15px; /* memberi jarak antara gambar dan teks jika ada */
+}
+
+.judul img.logo {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+  background-color: #ffffffcc; /* putih semi-transparan */
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1); /* opsional untuk efek lembut */
 }
 
 .profile-icon {
-    font-size: 50px;
+font-size: 50px;
   border-radius: 50%;
   object-fit: cover;
   cursor: pointer;
@@ -75,7 +88,6 @@ body {
     margin-top: 1rem;
     display: flex;
     gap: 1rem;
-    
 }
 
 .thumb {
@@ -124,9 +136,9 @@ body {
     background-color: #fbede9;
      border-style: solid;
     color: #555;
-    width: 182px;
+    width: 156px;
     height: 60px;
-    font-family: sans-serif;
+    font-family: 'Poly';
     font-size: 20px;
     padding: 1rem;
     border-width: 1px;
@@ -141,22 +153,22 @@ body {
     border-style: solid;
     border-color: #333;
     color: #555;
-    width: 580px;
+    width: 500px;
     height: 60px;
-    font-family: sans-serif;
+    font-family: 'Poly';
     font-size: 20px;
     padding: 1rem;
     margin-top: 0.8rem;
 }
 
 .description {
-    width: 580px;
+    width: 500px;
     height: 240px;
     border-radius: 10px;
     background-color: #fbede9;
     color: #555;
     padding: 1rem;
-    font-family: sans-serif;
+    font-family: 'Poly';
     border-width: 1px;
     border-color: #333;
     border-style: solid;
@@ -176,8 +188,6 @@ body {
     margin-top: 2rem;
     margin-right: 2rem;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    
-    
 }
 
 .search-bar {
@@ -215,22 +225,17 @@ body {
     border-radius: 6px;
 }
 
-
-
 .add-product {
-    position: fixed;
-    right: 2rem;
-    bottom: 2rem;
     background-color: #4E7C73;
     border: none;
-    width: 125px;
+    width: 150px;
     height: 60px;
     border-radius: 10px;
-    font-size: 18px;
+    font-size: 20px;
     color: white;
     cursor: pointer;
-    margin-bottom: 0.8rem;
-    margin-right: 52.7rem;
+    margin-top: 0.8rem;
+    font-family: 'Poly';
 }
 
 .add-product:hover{
@@ -238,19 +243,17 @@ body {
 }
 
 .delete-product{
-    position: fixed;
-    right: 2rem;
-    bottom: 2rem;
     background-color: #b31800;
     border: none;
-    width: 125px;
+    width: 150px;
     height: 60px;
     border-radius: 10px;
-    font-size: 18px;
+    font-size: 20px;
     color: white;
     cursor: pointer;
-    margin-bottom: 0.8rem;
-    margin-right: 44rem;
+    margin-top: 0.8rem;
+    margin-left: 0.5rem;
+    font-family: 'Poly';
 }
 
 .delete-product:hover{

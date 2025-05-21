@@ -24,13 +24,26 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #4e7c73;
+  background-color: #1e6656;
   padding: 10px 40px 15px 40px;
 }
 
 .judul {
+  display: flex;
+  align-items: center;
   font-size: 40px;
   color: white;
+  gap: 15px; /* memberi jarak antara gambar dan teks jika ada */
+}
+
+.judul img.logo {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+  background-color: #ffffffcc; /* putih semi-transparan */
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1); /* opsional untuk efek lembut */
 }
 
 /* Search */
@@ -39,9 +52,15 @@ body {
   align-items: center;
   background-color: white;
   border-radius: 30px;
-  overflow: hidden;
+  overflow: hidden; /* default hidden */
   height: 43px;
   width: 45%;
+  position: relative;
+}
+
+.search_bar.dropdown-active {
+  overflow: visible; /* aktif saat dropdown muncul */
+  border-radius: 30px;
 }
 
 .search_bar input {
@@ -50,10 +69,11 @@ body {
   outline: none;
   font-size: 17px;
   flex: 1;
+  border-radius: 30px;
 }
 
 .search-btn {
-  background-color: #3B9F9F;
+  background-color: rgb(45, 130, 113);;
   border: none;
   padding: 0 18px;
   height: 100%;
@@ -64,10 +84,67 @@ body {
   align-items: center;
   border-left: 1px solid #4E7C73;
   transition: background-color 0.2s ease;
+  border-top-right-radius: 30px;
+  border-bottom-right-radius: 30px;
 }
 
 .search-btn:hover {
   background-color: #5c9089;
+}
+
+.search-history {
+  position: absolute;
+  top: 48px;
+  left: 0;
+  width: 100%;
+  background: white;
+  border: 1px solid #ccc;
+  border-top: none;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  display: none;
+  font-family: 'Poly';
+  padding: 8px;
+}
+
+.dropdown-item {
+  padding: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #333;
+  border-bottom: 1px solid #eee;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+  border-radius: 10px;
+}
+
+.dropdown-item:last-child {
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.dropdown-item:first-child {
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+.dropdown-btn.active {
+  background-color: #e8f5e9;
+  font-weight: bold;
+}
+
+.dropdown-btn.dropdown-open {
+  border-bottom: 1px solid #ddd;
+}
+
+.active-subcategory {
+  font-weight: bold;
+  color: #4CAF50;
 }
 
 /* KONTEN UTAMA */
@@ -134,7 +211,7 @@ body {
 }
 
 .judul-produk h1 {
-  font-family: 'Patua One';
+  font-family: 'Poly';
   font-size: 38px;
 }
 
@@ -163,7 +240,7 @@ body {
 
 /* background harga */
 .harga-container {
-  background-color: #4e7c73;
+  background-color: #1e6656;
   width: 100%;
   padding: 15px 20px;
   margin-top: 25px;
@@ -171,7 +248,8 @@ body {
 }
 
 .harga {
-  font-family: 'Patua One';
+  font-family: 'Poly';
+  font-weight: bold;
   color: white;
   font-size: 28px;
   letter-spacing: 1px;
@@ -179,7 +257,7 @@ body {
 
 /* Deskripsi, cara perawatan, funfact */
 .deskripsi {
-  font-family: 'Poly', serif;
+  font-family: 'Poly';
   font-size: 20px;
   line-height: 1.3;
   margin-top: 25px;
@@ -207,9 +285,9 @@ body {
 }
 
 .float-btn {
-  width: 70px;
-  height: 70px;
-  border-radius: 15%;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
   color: black;
   font-size: 50px;
   display: flex;
@@ -217,17 +295,38 @@ body {
   justify-content: center;
   text-decoration: none;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  transition: background-color 0.3s ease;
+  transition: opacity 0.3s ease;
+  color: #ffffff;
 }
 
 .float-btn.whatsapp {
-  background-color: #61BFBF;
+  background-color: #25d366;
 }
 
 .float-btn.instagram {
-  background-color: #FEB6B9;
+  background: radial-gradient(circle at 30% 107%, 
+        #fdf497 0%, 
+        #fdf497 5%, 
+        #fd5949 45%, 
+        #d6249f 60%, 
+        #285AEB 90%);
 }
 
 .float-btn:hover {
   opacity: 0.8;
+}
+
+/* Add these styles to your CSS file */
+.dropdown-btn.active {
+  background-color: #e8f5e9;
+  font-weight: bold;
+}
+
+.dropdown-btn.dropdown-open {
+  border-bottom: 1px solid #ddd;
+}
+
+.active-subcategory {
+  font-weight: bold;
+  color: #4CAF50;
 }
