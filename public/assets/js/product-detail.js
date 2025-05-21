@@ -37,6 +37,9 @@ async function fetchProductData(productId) {
       stock: data.stockProduk,
       category: data.kategoriMain,
       picture: data.gambarUtama,
+      gambarKedua: data.gambarKedua || null,
+      gambarKetiga: data.gambarKetiga || null,
+      gambarKeempat: data.gambarKeempat || null
     });
   } catch (error) {
     console.error('Gagal mengambil data produk:', error);
@@ -54,8 +57,40 @@ function updateProductDetails(data) {
     const descriptionElement = document.getElementById('product-desc');
     
     // Update image source with full path
-    const imageBaseUrl = '/uploads/'; // Update with your actual image base URL
+    const imageBaseUrl = '/uploads/'; 
     mainImage.src = data.picture ? `${imageBaseUrl}${data.picture}` : '../uploads/default.png';
+    
+    // Handle additional images if they exist
+    const previewContainer = document.querySelector('.gambar-preview');
+    
+    // Clear existing preview images
+    if (previewContainer) {
+        previewContainer.innerHTML = '';
+        
+        // Add main image to preview
+        const mainPreview = document.createElement('img');
+        mainPreview.src = mainImage.src;
+        mainPreview.id = 'main1';
+        mainPreview.className = 'preview-img active';
+        mainPreview.onclick = function() {
+            mainImage.src = this.src;
+            setActivePreview(this);
+        };
+        previewContainer.appendChild(mainPreview);
+        
+        // Add additional images if they exist
+        if (data.gambarKedua) {
+            addPreviewImage(previewContainer, data.gambarKedua, 'main2', imageBaseUrl);
+        }
+        
+        if (data.gambarKetiga) {
+            addPreviewImage(previewContainer, data.gambarKetiga, 'main3', imageBaseUrl);
+        }
+        
+        if (data.gambarKeempat) {
+            addPreviewImage(previewContainer, data.gambarKeempat, 'main4', imageBaseUrl);
+        }
+    }
     
     // Update product details
     titleElement.textContent = data.name;
@@ -63,4 +98,27 @@ function updateProductDetails(data) {
     stockElement.textContent = `Stok: ${data.stock}`;
     priceElement.textContent = `Rp${parseInt(data.price).toLocaleString('id-ID')}`;
     descriptionElement.textContent = data.description;
+}
+
+// Helper function to add preview images
+function addPreviewImage(container, imagePath, id, baseUrl) {
+    const preview = document.createElement('img');
+    preview.src = `${baseUrl}${imagePath}`;
+    preview.id = id;
+    preview.className = 'preview-img';
+    preview.onclick = function() {
+        document.getElementById('main-image').src = this.src;
+        setActivePreview(this);
+    };
+    container.appendChild(preview);
+}
+
+// Helper function to set active preview
+function setActivePreview(activeElement) {
+    // Remove active class from all preview images
+    document.querySelectorAll('.preview-img').forEach(img => {
+        img.classList.remove('active');
+    });
+    // Add active class to clicked image
+    activeElement.classList.add('active');
 }
