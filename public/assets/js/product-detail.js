@@ -137,8 +137,9 @@ function updateProductDetails(data) {
   const priceElement = document.getElementById('product-price');
   const descriptionElement = document.getElementById('product-desc');
 
-  const imageBaseUrl = '/uploads/';
-  mainImage.src = data.picture ? `${imageBaseUrl}${data.picture}` : '../uploads/default.png';
+  // Update the image base URL to point to the products folder
+  const imageBaseUrl = '/uploads/products/';
+  mainImage.src = data.picture ? `${imageBaseUrl}${data.picture}` : '/uploads/placeholder.jpeg';
 
   const previewContainer = document.querySelector('.gambar-preview');
   if (previewContainer) {
@@ -154,9 +155,12 @@ function updateProductDetails(data) {
     };
     previewContainer.appendChild(mainPreview);
 
-    addPreviewImage(previewContainer, data.gambarKedua || 'default-image.jpg', 'main2', imageBaseUrl);
-    addPreviewImage(previewContainer, data.gambarKetiga || 'default-image.jpg', 'main3', imageBaseUrl);
-    addPreviewImage(previewContainer, data.gambarKeempat || 'default-image.jpg', 'main4', imageBaseUrl);
+    // Add additional previews - update default image path
+    const defaultImage = '/uploads/placeholder.jpeg';
+
+    addPreviewImage(previewContainer, data.gambarKedua, 'main2', imageBaseUrl, defaultImage);
+    addPreviewImage(previewContainer, data.gambarKetiga, 'main3', imageBaseUrl, defaultImage);
+    addPreviewImage(previewContainer, data.gambarKeempat, 'main4', imageBaseUrl, defaultImage);
   }
 
   titleElement.textContent = data.name;
@@ -166,15 +170,23 @@ function updateProductDetails(data) {
   descriptionElement.textContent = data.description;
 }
 
-function addPreviewImage(container, imagePath, id, baseUrl) {
+function addPreviewImage(container, imagePath, id, baseUrl, defaultImage) {
   const preview = document.createElement('img');
   preview.src = `${baseUrl}${imagePath}`;
   preview.id = id;
   preview.className = 'preview-img';
+  
+  // Add error handler to use default image if the actual image fails to load
+  preview.onerror = function() {
+    this.src = '/uploads/placeholder.jpeg';
+    console.log('Image failed to load, using placeholder instead');
+  };
+  
   preview.onclick = function () {
     document.getElementById('main-image').src = this.src;
     setActivePreview(this);
   };
+  
   container.appendChild(preview);
 }
 
