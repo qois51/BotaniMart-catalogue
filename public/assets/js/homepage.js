@@ -34,10 +34,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function renderProducts(products) {
       const produkRow = document.querySelector('.produk-row');
-      const basePath = '../uploads/'; 
+      // Update this line to point to the products directory
+      const basePath = '../uploads/products/'; 
 
       produkRow.innerHTML = products.map(product => {
-          const imageUrl = product.gambarUtama ? basePath + product.gambarUtama : '../uploads/default.png';
+          // Update default path as well
+          const imageUrl = product.gambarUtama ? basePath + product.gambarUtama : '../uploads/placeholder.jpeg';
           return `
               <a href="views/product-details.html?id=${product.id}" class="produk-link">
                   <div class="produk">

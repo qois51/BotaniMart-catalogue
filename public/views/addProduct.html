@@ -3,8 +3,10 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Botani Mart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Product - Botani Mart</title>
   <link rel="stylesheet" href="../assets/css/addProduct.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
 <body>
@@ -13,34 +15,118 @@
       <img src="../uploads/Botani mart.png" alt="Botani Mart Logo" class="logo">
     </div>
     <div class="profile-icon">
-        <i class="fas fa-user-circle"></i>
+      <i class="fas fa-user-circle"></i>
+      <div class="dropdown-profile">
+        <div class="menu-user-header">
+          <i class="fas fa-user"></i> <span id="username">Admin</span>
+        </div>
+        <div class="dropdown-item">
+          <i class="fas fa-eye"></i> Show Profile
+        </div>
+        <div class="dropdown-item">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </div>
+      </div>
     </div>
   </div>
 
- <div class="container">
-        <div class="image-section">
-            <img src="../uploads/selada.png.jpg" alt="Gambar utama" class="main-image">
-            <div class="thumbnail-row">
-                <img src="../uploads/thumbnail1.png.jpg" alt="thumb1" class="thumb">
-                <img src="../uploads/thumbnail2.png.jpg" alt="thumb2" class="thumb">
-                <button class="thumb add-thumb">+</button>
-            </div>
+  <div class="container">
+    <h1 id="judul-sub">Add New Product</h1>
+    <form id="productForm" enctype="multipart/form-data">
+      <div class="image-section">
+        <div class="main-image-container">
+          <img src="../uploads/placeholder.jpeg" alt="Product image" class="main-image" id="mainImagePreview">
+          <div class="image-overlay">
+            <i class="fas fa-camera"></i>
+            <span>Click to upload main image</span>
+          </div>
+          <input type="file" id="mainImageUpload" accept="image/*" style="display: none;">
         </div>
-
-        <div class="form-section">
-            <div class="form-inputs">
-                <input type="text" placeholder="Nama produk..." class="input-chip">
-                <input type="text" placeholder="Harga..." class="input-chip">
-                <input type="text" placeholder="Stok..." class="input-chip">
-                
-            </div>
-            <textarea class="description" placeholder="Tambahkan detail produk..."></textarea>
-            <input type="text" placeholder="Kategori..." class="input-chipkat">
-            <button class="add-product">Add Product</button>
-        </div>
-
         
-    </div>
+        <div class="thumbnail-row">
+          <div class="thumb-container">
+            <img src="../uploads/placeholder.jpeg" alt="Thumbnail 1" class="thumb" id="thumb1Preview">
+            <div class="thumb-overlay">
+              <i class="fas fa-camera"></i>
+              <span>Image 1</span>
+            </div>
+            <input type="file" id="thumb1Upload" accept="image/*" style="display: none;">
+          </div>
+          <div class="thumb-container">
+            <img src="../uploads/placeholder.jpeg" alt="Thumbnail 2" class="thumb" id="thumb2Preview">
+            <div class="thumb-overlay">
+              <i class="fas fa-camera"></i>
+              <span>Image 2</span>
+            </div>
+            <input type="file" id="thumb2Upload" accept="image/*" style="display: none;">
+          </div>
+          <div class="thumb-container">
+            <img src="../uploads/placeholder.jpeg" alt="Thumbnail 3" class="thumb" id="thumb3Preview">
+            <div class="thumb-overlay">
+              <i class="fas fa-camera"></i>
+              <span>Image 3</span>
+            </div>
+            <input type="file" id="thumb3Upload" accept="image/*" style="display: none;">
+          </div>
+        </div>
+
+      <div class="form-section">
+        <div class="form-group">
+          <label for="product-name">Product Name <span class="required">*</span></label>
+          <input type="text" placeholder="Enter product name..." class="input-chip" id="product-name" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="latin-name">Latin Name</label>
+          <input type="text" placeholder="Enter Latin name..." class="input-chip" id="latin-name">
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="stock">Stock <span class="required">*</span></label>
+            <input type="number" placeholder="Enter stock amount..." class="input-chip" id="stock" required min="0">
+          </div>
+          <div class="form-group half">
+            <label for="price">Price (Rp) <span class="required">*</span></label>
+            <input type="number" placeholder="Enter price..." class="input-chip" id="price" required min="0">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="description">Product Description <span class="required">*</span></label>
+          <textarea class="description" placeholder="Enter product description..." id="description" required></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="Specification">Specifications</label>
+          <textarea class="description" placeholder="Enter product specifications..." id="Specification"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="perawatan">Care Instructions</label>
+          <textarea class="description" placeholder="Enter care instructions..." id="perawatan"></textarea>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="mainCategory">Main Category <span class="required">*</span></label>
+            <input type="text" placeholder="Main category..." class="input-chipkat" id="mainCategory" required>
+          </div>
+          <div class="form-group half">
+            <label for="subCategory">Sub Category <span class="required">*</span></label>
+            <input type="text" placeholder="Sub category..." class="input-chipkat" id="subCategory" required>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="cancel-btn" onclick="window.history.back()">Cancel</button>
+          <button type="submit" class="add-product">Add Product</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  
+  <script src="../assets/js/addProduct.js"></script>
 </body>
 
 </html>

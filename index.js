@@ -8,6 +8,11 @@ const { configureSession, requireAuth, requireAdmin } = require(path.join(PATHS.
 
 const authRoutes = require(path.join(PATHS.server, 'auth', 'auth.routes.js'))
 
+const productRoutes = require(path.join(PATHS.server, 'routes', 'product.routes.js'));
+
+const { setupDirectories } = require(path.join(PATHS.server, 'util', 'setup.js'));
+setupDirectories();
+
 const livereload = require('livereload');
 const connectLivereload = require('connect-livereload');
 
@@ -26,6 +31,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); 
 
 configureSession(app);
+
+// Add this along with your other routes
+app.use('/api/products', productRoutes);
 
 // Serve static files
 app.use(express.static(path.join(PATHS.public)));
