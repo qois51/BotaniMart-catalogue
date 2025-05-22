@@ -17,7 +17,7 @@ const livereload = require('livereload');
 const connectLivereload = require('connect-livereload');
 
 const { queryProducts } = require(path.join(PATHS.server, 'logic', 'queryProduct.js'));
-
+const db = require(PATHS.db);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -91,6 +91,21 @@ app.get('/products', async (req, res) => {
   }
 });
 
+app.post('/products/:id/views', async (req, res) => {
+  const productId = req.params.id;
+  try {
+    await db.sequelize.query(
+      'UPDATE products SET views = views + 1 WHERE id = :id',
+      {
+        replacements: { id: productId },
+        type: db.Sequelize.QueryTypes.UPDATE
+      }
+    );
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 
 // Route for getting a product by ID (using path parameter)
 app.get('/products/:id', async (req, res) => {

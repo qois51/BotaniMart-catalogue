@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
+  incrementProductViews(id);
   fetchProductData(id);
 
   // === LIVE SEARCH DROPDOWN ===
@@ -126,6 +127,21 @@ async function fetchProductData(productId) {
     console.error('Gagal mengambil data produk:', error);
     document.getElementById('product-container').innerHTML =
       `<div class="error-message">Error: ${error.message}</div>`;
+  }
+}
+
+async function incrementProductViews(productId) {
+  try {
+    const response = await fetch(`/products/${productId}/views`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    if (!response.ok) {
+      console.error('Gagal update views produk');
+    }
+  } catch (error) {
+    console.error('Error saat update views produk:', error);
   }
 }
 
