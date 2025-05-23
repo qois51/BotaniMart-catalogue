@@ -108,16 +108,13 @@ exports.createProduct = async (req, res) => {
         namaProduk,
         namaLatin,
         hargaProduk,
-        stockProduk,
         deskripsi,
-        specification,
-        caraPerawatan,
         kategoriMain,
         kategoriSub
       } = req.body;
 
-      if (!namaProduk || !hargaProduk || !deskripsi || !kategoriMain) {
-        return res.status(400).json({ error: 'Field nama, harga, deskripsi, dan kategori utama wajib diisi' });
+      if (!namaProduk || !hargaProduk || !kategoriMain || !kategoriSub) {
+        return res.status(400).json({ error: 'Field nama, harga, kategori utama dan kategori sekondary wajib diisi' });
       }
 
       if (!req.files || !req.files.gambarUtama) {
@@ -128,12 +125,9 @@ exports.createProduct = async (req, res) => {
         namaProduk,
         namaLatin: namaLatin || null,
         hargaProduk: parseFloat(hargaProduk),
-        stockProduk: parseInt(stockProduk) || 0,
-        deskripsi,
-        specification: specification || null,
-        caraPerawatan: caraPerawatan || null,
-        kategoriMain,
-        kategoriSub: kategoriSub || null,
+        deskripsi: deskripsi || null,
+        kategoriMain: kategoriMain,
+        kategoriSub: kategoriSub,
         gambarUtama: req.files.gambarUtama[0].filename,
         gambarKedua: req.files.gambarKedua ? req.files.gambarKedua[0].filename : null,
         gambarKetiga: req.files.gambarKetiga ? req.files.gambarKetiga[0].filename : null,

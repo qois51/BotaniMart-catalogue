@@ -120,16 +120,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get form values using the correct IDs from your HTML
         const namaProduk = document.getElementById('product-name').value;
         const namaLatin = document.getElementById('latin-name').value;
-        const stockProduk = document.getElementById('stock').value;
         const hargaProduk = document.getElementById('price').value;
         const deskripsi = document.getElementById('description').value;
-        const specification = document.getElementById('Specification').value;
-        const perawatan = document.getElementById('perawatan').value;
         const mainKategory = document.getElementById('mainCategory').value;
         const subKategory = document.getElementById('subCategory').value;
 
         // Validate form with updated fields
-        if (!namaProduk || !hargaProduk || !stockProduk || !deskripsi) {
+        if (!namaProduk || !hargaProduk || !mainKategory || !subKategory) {
             alert('Silakan lengkapi field yang wajib diisi!');
             return;
         }
@@ -149,11 +146,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData();
             formData.append('namaProduk', namaProduk);
             formData.append('namaLatin', namaLatin);
-            formData.append('stockProduk', stockProduk);
             formData.append('hargaProduk', hargaProduk);
             formData.append('deskripsi', deskripsi);
-            formData.append('specification', specification);
-            formData.append('caraPerawatan', perawatan);
             formData.append('kategoriMain', mainKategory);
             formData.append('kategoriSub', subKategory);
             
