@@ -1,6 +1,7 @@
 const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
+const fsPromises = require('fs/promises');
 const { queryProducts } = require('../logic/queryProduct');
 const PATHS = require('../../config/paths');
 const { Product } = require(PATHS.db);
@@ -65,6 +66,23 @@ const productUpload = multer({
   { name: 'gambarKeempat', maxCount: 1 }
 ]);
 
+// Add this helper function at the top of your file
+async function deleteImageFile(filename) {
+  if (!filename) return;
+  
+  const imagePath = path.join(__dirname, '../../public/uploads/products', filename);
+  
+  try {
+    await fsPromises.access(imagePath); // Check if file exists
+    await fsPromises.unlink(imagePath); // Delete the file
+    console.log(`Deleted image: ${filename}`);
+    return true;
+  } catch (err) {
+    console.log(`Could not delete image ${filename}: ${err.message}`);
+    return false;
+  }
+}
+
 // Controller methods
 exports.getAllProducts = async (req, res) => {
   try {
@@ -108,16 +126,13 @@ exports.createProduct = async (req, res) => {
         namaProduk,
         namaLatin,
         hargaProduk,
-        stockProduk,
         deskripsi,
-        specification,
-        caraPerawatan,
         kategoriMain,
         kategoriSub
       } = req.body;
 
-      if (!namaProduk || !hargaProduk || !deskripsi || !kategoriMain) {
-        return res.status(400).json({ error: 'Field nama, harga, deskripsi, dan kategori utama wajib diisi' });
+      if (!namaProduk || !hargaProduk || !kategoriMain || !kategoriSub) {
+        return res.status(400).json({ error: 'Field nama, harga, kategori utama dan kategori sekondary wajib diisi' });
       }
 
       if (!req.files || !req.files.gambarUtama) {
@@ -128,12 +143,10 @@ exports.createProduct = async (req, res) => {
         namaProduk,
         namaLatin: namaLatin || null,
         hargaProduk: parseFloat(hargaProduk),
-        stockProduk: parseInt(stockProduk) || 0,
-        deskripsi,
-        specification: specification || null,
-        caraPerawatan: caraPerawatan || null,
-        kategoriMain,
-        kategoriSub: kategoriSub || null,
+        stockProduk: 0,
+        deskripsi: deskripsi || null,
+        kategoriMain: kategoriMain,
+        kategoriSub: kategoriSub,
         gambarUtama: req.files.gambarUtama[0].filename,
         gambarKedua: req.files.gambarKedua ? req.files.gambarKedua[0].filename : null,
         gambarKetiga: req.files.gambarKetiga ? req.files.gambarKetiga[0].filename : null,
@@ -186,95 +199,208 @@ exports.addProductView = async (req, res) => {
   }
 };
 
-exports.updateProduct = async (req, res) => {
+/**
+ * Delete a product by ID
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+exports.deleteProduct = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    
+    // Find the product to get image paths before deletion
+    const product = await Product.findByPk(productId);
+    
+    if (!product) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Product not found' 
+      });
+    }
+    
+    // Store image paths to delete after product is removed from database
+    const imagesToDelete = [
+      product.gambarUtama,
+      product.gambarKedua,
+      product.gambarKetiga,
+      product.gambarKeempat
+    ].filter(img => img); // Filter out null/undefined values
+    
+    // Delete the product from database
+    const result = await Product.destroy({
+      where: { id: productId }
+    });
+    
+    if (result === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Product not found or already deleted' 
+      });
+    }
+    
+    // Delete associated image files
+    const uploadDir = path.join(__dirname, '../../public/uploads/products');
+    
+    // Delete each image asynchronously
+    const deletePromises = imagesToDelete.map(async (imageName) => {
+      if (!imageName) return;
+      
+      const imagePath = path.join(uploadDir, imageName);
+      
+      try {
+        await fsPromises.access(imagePath); // Check if file exists
+        await fsPromises.unlink(imagePath); // Delete the file
+        console.log(`Deleted image: ${imageName}`);
+      } catch (err) {
+        // File doesn't exist or other error - just log it
+        console.log(`Could not delete image ${imageName}: ${err.message}`);
+      }
+    });
+    
+    // Wait for all image deletions to complete
+    await Promise.all(deletePromises);
+    
+    // Return success response
+    return res.status(200).json({ 
+      success: true, 
+      message: 'Product successfully deleted' 
+    });
+    
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Failed to delete product', 
+      error: error.message 
+    });
+  }
+};
+
+exports.updateProduct = (req, res) => {
   productUpload(req, res, async function(err) {
     if (err) {
       return res.status(400).json({ error: `Upload error: ${err.message}` });
     }
-
+    
     try {
-      const productId = parseInt(req.params.id);
-      if (isNaN(productId)) {
-        return res.status(400).json({ error: 'ID tidak valid' });
+      const productId = req.params.id;
+      
+      // Find the product to update
+      const product = await Product.findByPk(productId);
+      
+      if (!product) {
+        return res.status(404).json({ error: 'Product not found' });
       }
-
-      const existingProduct = await Product.findByPk(productId);
-      if (!existingProduct) {
-        return res.status(404).json({ error: 'Produk tidak ditemukan' });
-      }
-
+      
+      // Extract form data
       const {
         namaProduk,
         namaLatin,
         hargaProduk,
-        stockProduk,
         deskripsi,
-        specification,
-        caraPerawatan,
         kategoriMain,
         kategoriSub
       } = req.body;
 
-      const updateFields = {
-        namaProduk: namaProduk || existingProduct.namaProduk,
-        namaLatin: namaLatin || existingProduct.namaLatin,
-        hargaProduk: hargaProduk ? parseFloat(hargaProduk) : existingProduct.hargaProduk,
-        stockProduk: stockProduk ? parseInt(stockProduk) : existingProduct.stockProduk,
-        deskripsi: deskripsi || existingProduct.deskripsi,
-        specification: specification || existingProduct.specification,
-        caraPerawatan: caraPerawatan || existingProduct.caraPerawatan,
-        kategoriMain: kategoriMain || existingProduct.kategoriMain,
-        kategoriSub: kategoriSub || existingProduct.kategoriSub,
-        gambarUtama: req.files.gambarUtama ? req.files.gambarUtama[0].filename : existingProduct.gambarUtama,
-        gambarKedua: req.files.gambarKedua ? req.files.gambarKedua[0].filename : existingProduct.gambarKedua,
-        gambarKetiga: req.files.gambarKetiga ? req.files.gambarKetiga[0].filename : existingProduct.gambarKetiga,
-        gambarKeempat: req.files.gambarKeempat ? req.files.gambarKeempat[0].filename : existingProduct.gambarKeempat
+      // Validation - same as in createProduct
+      if (!namaProduk || !hargaProduk || !kategoriMain) {
+        return res.status(400).json({ error: 'Field nama, harga, and kategori utama wajib diisi' });
+      }
+
+      // Prepare update data
+      const updateData = {
+        namaProduk,
+        namaLatin: namaLatin || null,
+        hargaProduk: parseFloat(hargaProduk),
+        deskripsi: deskripsi || null,
+        kategoriMain,
+        kategoriSub: kategoriSub || '' // Use empty string to avoid null constraint violation
       };
-
-      await existingProduct.update(updateFields);
-
-      res.json({ 
-        message: 'Produk berhasil diperbarui', 
-        product: existingProduct,
-        redirect: '/views/dashboard.html'
+      
+      // Handle images - similar to createProduct but checking for existing images
+      
+      // Main image handling
+      if (req.files && req.files.gambarUtama) {
+        // New image uploaded - save new filename and delete old image
+        updateData.gambarUtama = req.files.gambarUtama[0].filename;
+        if (product.gambarUtama) {
+          await deleteImageFile(product.gambarUtama);
+        }
+      }
+      // If no new image uploaded, keep the existing one
+      
+      // Second image handling
+      if (req.files && req.files.gambarKedua) {
+        // New second image uploaded - save new filename and delete old image
+        updateData.gambarKedua = req.files.gambarKedua[0].filename;
+        if (product.gambarKedua) {
+          await deleteImageFile(product.gambarKedua);
+        }
+      } else if (req.body.removeGambarKedua === 'true') {
+        // Client requested to remove this image
+        if (product.gambarKedua) {
+          await deleteImageFile(product.gambarKedua);
+        }
+        updateData.gambarKedua = null;
+      }
+      // If neither condition is true, keep the existing image (don't include in updateData)
+      
+      // Third image handling
+      if (req.files && req.files.gambarKetiga) {
+        // New third image uploaded - save new filename and delete old image
+        updateData.gambarKetiga = req.files.gambarKetiga[0].filename;
+        if (product.gambarKetiga) {
+          await deleteImageFile(product.gambarKetiga);
+        }
+      } else if (req.body.removeGambarKetiga === 'true') {
+        // Client requested to remove this image
+        if (product.gambarKetiga) {
+          await deleteImageFile(product.gambarKetiga);
+        }
+        updateData.gambarKetiga = null;
+      }
+      // If neither condition is true, keep the existing image (don't include in updateData)
+      
+      // Fourth image handling
+      if (req.files && req.files.gambarKeempat) {
+        // New fourth image uploaded - save new filename and delete old image
+        updateData.gambarKeempat = req.files.gambarKeempat[0].filename;
+        if (product.gambarKeempat) {
+          await deleteImageFile(product.gambarKeempat);
+        }
+      } else if (req.body.removeGambarKeempat === 'true') {
+        // Client requested to remove this image
+        if (product.gambarKeempat) {
+          await deleteImageFile(product.gambarKeempat);
+        }
+        updateData.gambarKeempat = null;
+      }
+      // If neither condition is true, keep the existing image (don't include in updateData)
+      
+      // Log update data for debugging
+      console.log('Updating product with data:', updateData);
+      
+      // Update the product in the database
+      await product.update(updateData);
+      
+      // Return success response
+      res.status(200).json({
+        success: true,
+        message: 'Product updated successfully',
+        product: {
+          id: product.id,
+          namaProduk: product.namaProduk,
+          updatedAt: product.updatedAt
+        },
+        redirect: '/admin-products.html'  // Include redirect path for frontend
       });
-
+      
     } catch (error) {
-      console.error('Error memperbarui produk:', error);
-      res.status(500).json({ error: 'Terjadi kesalahan saat memperbarui produk' });
+      console.error('Error updating product:', error);
+      res.status(500).json({ 
+        error: 'Failed to update product', 
+        details: error.message
+      });
     }
   });
-};
-
-exports.deleteProduct = async (req, res) => {
-  try {
-    const productId = parseInt(req.params.id);
-    if (isNaN(productId)) {
-      return res.status(400).json({ error: 'ID tidak valid' });
-    }
-
-    const product = await Product.findByPk(productId);
-    if (!product) {
-      return res.status(404).json({ error: 'Produk tidak ditemukan' });
-    }
-
-    const imageFields = ['gambarUtama', 'gambarKedua', 'gambarKetiga', 'gambarKeempat'];
-    imageFields.forEach(field => {
-      const imagePath = product[field] ? path.join(__dirname, '../../public/uploads/products', product[field]) : null;
-      if (imagePath && fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath);
-      }
-    });
-
-    await product.destroy();
-
-    res.json({ 
-      message: 'Produk berhasil dihapus',
-      redirect: '/views/dashboard.html'
-    });
-
-  } catch (error) {
-    console.error('Error hapus produk:', error);
-    res.status(500).json({ error: 'Terjadi kesalahan saat menghapus produk' });
-  }
 };

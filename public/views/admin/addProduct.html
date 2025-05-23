@@ -7,8 +7,9 @@
   <title>Add Product - Botani Mart</title>
   <link rel="stylesheet" href="../assets/css/addProduct.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jodit/3.24.2/jodit.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jodit/3.24.2/jodit.min.js"></script>
+  </head>
 <body>
   <div class="header">
     <div class="judul">
@@ -83,28 +84,14 @@
         
         <div class="form-row">
           <div class="form-group half">
-            <label for="stock">Stock <span class="required">*</span></label>
-            <input type="number" placeholder="Enter stock amount..." class="input-chip" id="stock" required min="0">
-          </div>
-          <div class="form-group half">
             <label for="price">Price (Rp) <span class="required">*</span></label>
             <input type="number" placeholder="Enter price..." class="input-chip" id="price" required min="0">
           </div>
         </div>
         
         <div class="form-group">
-          <label for="description">Product Description <span class="required">*</span></label>
-          <textarea class="description" placeholder="Enter product description..." id="description" required></textarea>
-        </div>
-        
-        <div class="form-group">
-          <label for="Specification">Specifications</label>
-          <textarea class="description" placeholder="Enter product specifications..." id="Specification"></textarea>
-        </div>
-        
-        <div class="form-group">
-          <label for="perawatan">Care Instructions</label>
-          <textarea class="description" placeholder="Enter care instructions..." id="perawatan"></textarea>
+          <label for="description">Product Description</label>
+          <textarea id="description" class="description" name="description"></textarea>
         </div>
         
         <div class="form-row">
