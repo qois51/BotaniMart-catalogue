@@ -7,61 +7,74 @@
   <link rel="stylesheet" href="../assets/css/login-admin.css">
 </head>
 <body>
-  <div class="login_container">
-    <h2>Login To Administration</h2>
-    <form id="loginForm">
-      <div class="bagian_input">
-        <i class="fas fa-user"></i>
-        <input type="text" id="username" placeholder="Enter your Username" required>
+ <div class="login_container">
+  <div class="login_content">
+    <div class="login_left">
+      <img src="../uploads/botani-mart-62fe71fb08a8b5052b22db64.jpg" alt="Admin Illustration">
+    </div>
+    <div class="login_right">
+      <h2>Login To Administration</h2>
+      <h1>Welcome back! Please enter your details</h1>
+      <form id="loginForm">
+        <div class="bagian_input">
+          <i class="fas fa-user"></i>
+          <input type="text" id="username" placeholder="Enter your Username" required>
+        </div>
+        <div class="bagian_input password-wrapper">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="password" placeholder="Enter Password" required>
+          <span id="togglePassword" class="toggle-password">
+            <i class="fas fa-eye"></i>
+          </span>
+        </div>
+        <div class="forgot">
+          <a href="/views/reset.html">Forgot password?</a>
+        </div>
+        <div class="login_footer">
+          <button type="submit">Sign In</button>
+        </div>
+      </form>
+      <div class="signup-link">
+        Don't have an account? <a href="/views/new-admin.html">Sign up</a>
       </div>
-      <div class="bagian_input password-wrapper">
-        <i class="fas fa-lock"></i>
-        <input type="password" id="password" placeholder="Enter Password" required>
-        <span id="togglePassword" class="toggle-password">Show</span>
-      </div>
-      <div class="forgot">
-        <a href="/views/reset.html">Forgot password?</a>
-      </div>
-      <div class="login_footer">
-        <button type="submit">Sign In</button>
-      </div>
-    </form>
-    <div class="signup-link">
-      Don't have an account? <a href="/views/new-admin.html">Sign up</a>
     </div>
   </div>
+</div>
 
-  <script>
-    const passwordInput = document.getElementById("password");
-    const togglePassword = document.getElementById("togglePassword");
+<script>
+  const passwordInput = document.getElementById("password");
+  const togglePassword = document.getElementById("togglePassword");
 
-    passwordInput.addEventListener("input", () => {
-      togglePassword.style.display = passwordInput.value ? "inline" : "none";
+  passwordInput.addEventListener("input", () => {
+    togglePassword.style.display = passwordInput.value ? "inline" : "none";
+  });
+
+  togglePassword.addEventListener("click", () => {
+    const isPassword = passwordInput.type === "password";
+    passwordInput.type = isPassword ? "text" : "password";
+
+    const icon = togglePassword.querySelector("i");
+    icon.classList.toggle("fa-eye");
+    icon.classList.toggle("fa-eye-slash");
+  });
+
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    const res = await fetch("/auth/login", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
     });
-
-    togglePassword.addEventListener("click", () => {
-      const isPassword = passwordInput.type === "password";
-      passwordInput.type = isPassword ? "text" : "password";
-      togglePassword.textContent = isPassword ? "Hide" : "Show";
-    });
-
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
-
-      const res = await fetch("/auth/login", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        window.location.href = '/views/dashboard.html';
-      } else {
-        alert(data.error || 'Login gagal');
-      }
-    });
-  </script>
+    const data = await res.json();
+    if (res.ok) {
+      window.location.href = '/views/dashboard.html';
+    } else {
+      alert(data.error || 'Login gagal');
+    }
+  });
+</script>
 </body>
 </html>

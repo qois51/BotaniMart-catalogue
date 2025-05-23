@@ -1,32 +1,85 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(to bottom right, #83c7b9, #60a798);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to bottom left, #83c7b9, #60a798);
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
 }
+
 .login_container {
-  background: #f5ded3;
+  background: #ffffff;
   border-radius: 16px;
-  padding: 32px;
-  width: 100%;
-  max-width: 360px;
-  text-align: center;
-  box-shadow:
-    0 0 20px rgba(0, 0, 0, 0.1),
-    0 0 40px rgba(255, 255, 255, 0.3),
-    0 0 80px rgba(255, 255, 255, 0.3);
+  width: 90%;
+  max-width: 850px;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.login_container h2 {
+
+.login_content {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.login_left {
+  flex: 1;
+  background-color: #d7ebe7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.login_left img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.login_right {
+  flex: 1;
+  background: #1e6656;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.login_right h2 {
   margin-top: 0;
-  margin-bottom: 24px;
-  color: #4d6e64;
-  font-size: 20px;
+  margin-bottom: 2px;
+  color: white;
+  font-size: 25px;
   font-weight: bold;
 }
+
+.login_right h1 {
+  color: white;
+  font-size: 12px;
+  margin-bottom: 35px;
+  font-weight: lighter;
+}
+
+.toggle-password {
+  cursor: pointer;
+  color: #3e978d;
+  font-size: 1.1em;
+  display: none;
+}
+
 .bagian_input {
   display: flex;
   align-items: center;
@@ -36,27 +89,31 @@ body {
   padding: 10px 12px;
   margin-bottom: 18px;
 }
+
 .bagian_input i {
-  font-size: 16px;
+  font-size: 20px;
   color: #4d6e64;
   margin-right: 10px;
 }
+
 .bagian_input input {
   border: none;
   outline: none;
   flex: 1;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   color: #000;
   background: transparent;
+  padding: 0.3rem;
 }
+
 .forgot {
   text-align: right;
   font-size: 12px;
   margin-bottom: 20px;
 }
 .forgot a {
-  color: #3e978d;
+  color: white;
   text-decoration: none;
 }
 .forgot a:hover {
@@ -81,10 +138,11 @@ body {
   background-color: #357f78;
 }
 .signup-link {
-  font-size: 13px;
+  font-size: 15px;
+  color: white;
 }
 .signup-link a {
-  color: #3e978d;
+  color: #46d2a8;
   font-weight: bold;
   text-decoration: none;
 }
