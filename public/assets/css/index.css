@@ -355,16 +355,3 @@ body {
   transition: transform 0.3s ease;
 }
 
-.dropdown-btn.active {
-  background-color: #e8f5e9;
-  font-weight: bold;
-}
-
-.dropdown-btn.dropdown-open {
-  border-bottom: 1px solid #ddd;
-}
-
-.active-subcategory {
-  font-weight: bold;
-  color: #4CAF50;
-}
