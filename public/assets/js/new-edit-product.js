@@ -169,12 +169,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Images
-        updateImagePreview(mainImagePreview.querySelector('img'), product.gambarUtama, '../../assets/images/placeholder-image.jpg');
+        updateImagePreview(mainImagePreview.querySelector('img'), product.gambarUtama, '/uploads/placeholder.jpeg');
         
         // Update thumbnail previews
         const thumbnailImages = [product.gambarKedua, product.gambarKetiga, product.gambarKeempat];
         thumbnailPreviews.forEach((preview, index) => {
-            updateImagePreview(preview.querySelector('img'), thumbnailImages[index], '../../assets/images/placeholder-image.jpg');
+            updateImagePreview(preview.querySelector('img'), thumbnailImages[index], '/uploads/placeholder.jpeg');
         });
     }
     
@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
             // Redirect back to products list after a short delay
             setTimeout(() => {
-                window.location.href = '/views/admin/admin-products.html';
+                window.location.href = '/admin-products';
             }, 2000);
         
         } catch (error) {
