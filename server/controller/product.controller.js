@@ -182,66 +182,6 @@ exports.addProductView = async (req, res) => {
   }
 };
 
-exports.updateProduct = async (req, res) => {
-  productUpload(req, res, async function(err) {
-    if (err) {
-      return res.status(400).json({ error: `Upload error: ${err.message}` });
-    }
-
-    try {
-      const productId = parseInt(req.params.id);
-      if (isNaN(productId)) {
-        return res.status(400).json({ error: 'ID tidak valid' });
-      }
-
-      const existingProduct = await Product.findByPk(productId);
-      if (!existingProduct) {
-        return res.status(404).json({ error: 'Produk tidak ditemukan' });
-      }
-
-      const {
-        namaProduk,
-        namaLatin,
-        hargaProduk,
-        stockProduk,
-        deskripsi,
-        specification,
-        caraPerawatan,
-        kategoriMain,
-        kategoriSub
-      } = req.body;
-
-      const updateFields = {
-        namaProduk: namaProduk || existingProduct.namaProduk,
-        namaLatin: namaLatin || existingProduct.namaLatin,
-        hargaProduk: hargaProduk ? parseFloat(hargaProduk) : existingProduct.hargaProduk,
-        stockProduk: stockProduk ? parseInt(stockProduk) : existingProduct.stockProduk,
-        deskripsi: deskripsi || existingProduct.deskripsi,
-        specification: specification || existingProduct.specification,
-        caraPerawatan: caraPerawatan || existingProduct.caraPerawatan,
-        kategoriMain: kategoriMain || existingProduct.kategoriMain,
-        kategoriSub: kategoriSub || existingProduct.kategoriSub,
-        gambarUtama: req.files.gambarUtama ? req.files.gambarUtama[0].filename : existingProduct.gambarUtama,
-        gambarKedua: req.files.gambarKedua ? req.files.gambarKedua[0].filename : existingProduct.gambarKedua,
-        gambarKetiga: req.files.gambarKetiga ? req.files.gambarKetiga[0].filename : existingProduct.gambarKetiga,
-        gambarKeempat: req.files.gambarKeempat ? req.files.gambarKeempat[0].filename : existingProduct.gambarKeempat
-      };
-
-      await existingProduct.update(updateFields);
-
-      res.json({ 
-        message: 'Produk berhasil diperbarui', 
-        product: existingProduct,
-        redirect: '/views/dashboard.html'
-      });
-
-    } catch (error) {
-      console.error('Error memperbarui produk:', error);
-      res.status(500).json({ error: 'Terjadi kesalahan saat memperbarui produk' });
-    }
-  });
-};
-
 /**
  * Delete a product by ID
  * @param {Object} req - Express request object
@@ -317,4 +257,117 @@ exports.deleteProduct = async (req, res) => {
       error: error.message 
     });
   }
+};
+
+// Update a product by ID
+exports.updateProduct = (req, res) => {
+  productUpload(req, res, async function(err) {
+    if (err) {
+      return res.status(400).json({ error: `Upload error: ${err.message}` });
+    }
+    
+    try {
+      const productId = req.params.id;
+      
+      // Find the product to update
+      const product = await Product.findByPk(productId);
+      
+      if (!product) {
+        return res.status(404).json({ error: 'Product not found' });
+      }
+      
+      // Extract form data
+      const {
+        namaProduk,
+        namaLatin,
+        hargaProduk,
+        stockProduk,
+        deskripsi,
+        kategoriMain,
+        kategoriSub,
+        originalMainImage,
+        originalImage2,
+        originalImage3,
+        originalImage4
+      } = req.body;
+      
+      // Prepare update data
+      const updateData = {
+        namaProduk,
+        namaLatin: namaLatin || null,
+        hargaProduk: parseFloat(hargaProduk),
+        stockProduk: stockProduk !== undefined ? parseInt(stockProduk) : null,
+        deskripsi: deskripsi || null,
+        kategoriMain,
+        kategoriSub: kategoriSub || null
+      };
+      
+      // Handle uploaded images or keep original ones
+      if (req.files.mainImage) {
+        updateData.gambarUtama = req.files.mainImage[0].filename;
+        
+        // Delete the old image if it exists
+        if (product.gambarUtama) {
+          deleteImageFile(product.gambarUtama);
+        }
+      } else if (originalMainImage) {
+        // Keep the original image
+        updateData.gambarUtama = originalMainImage;
+      }
+      
+      if (req.files.image2) {
+        updateData.gambarKedua = req.files.image2[0].filename;
+        
+        // Delete the old image if it exists
+        if (product.gambarKedua) {
+          deleteImageFile(product.gambarKedua);
+        }
+      } else if (originalImage2) {
+        // Keep the original image
+        updateData.gambarKedua = originalImage2;
+      }
+      
+      if (req.files.image3) {
+        updateData.gambarKetiga = req.files.image3[0].filename;
+        
+        // Delete the old image if it exists
+        if (product.gambarKetiga) {
+          deleteImageFile(product.gambarKetiga);
+        }
+      } else if (originalImage3) {
+        // Keep the original image
+        updateData.gambarKetiga = originalImage3;
+      }
+      
+      if (req.files.image4) {
+        updateData.gambarKeempat = req.files.image4[0].filename;
+        
+        // Delete the old image if it exists
+        if (product.gambarKeempat) {
+          deleteImageFile(product.gambarKeempat);
+        }
+      } else if (originalImage4) {
+        // Keep the original image
+        updateData.gambarKeempat = originalImage4;
+      }
+      
+      // Update the product in the database
+      await product.update(updateData);
+      
+      // Return success response
+      res.status(200).json({
+        success: true,
+        message: 'Product updated successfully',
+        product: {
+          id: product.id,
+          namaProduk: product.namaProduk,
+          updatedAt: product.updatedAt
+        }
+      });
+      
+    } catch (error) {
+      console.error('Error updating product:', error);
+      res.status(500).json({ error: 'Failed to update product' });
+    }
+  });
 };

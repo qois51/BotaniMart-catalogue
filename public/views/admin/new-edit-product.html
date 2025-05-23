@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product - BotaniMart Admin</title>
+    <link rel="stylesheet" href="../../assets/css/new-edit-product.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Jodit Editor CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jodit/3.24.2/jodit.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Edit Product</h1>
+            <div class="profile-icon" id="profileIcon">
+                <i class="fas fa-user-circle"></i>
+                <div class="dropdown-profile" id="profileDropdown">
+                    <a href="/admin/dashboard" class="dropdown-item">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item logout-btn" id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="back-link">
+            <a href="/views/admin/admin-products.html">
+                <i class="fas fa-arrow-left"></i> Back to Products
+            </a>
+        </div>
+
+        <div class="edit-container">
+            <div class="loading-spinner" id="loadingSpinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading product data...</p>
+            </div>
+
+            <form id="editProductForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="product-name">Product Name</label>
+                        <input type="text" id="product-name" name="namaProduk" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="latin-name">Latin Name (Optional)</label>
+                        <input type="text" id="latin-name" name="namaLatin">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="price">Price (Rp)</label>
+                        <input type="number" id="price" name="hargaProduk" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="stock">Stock</label>
+                        <input type="number" id="stock" name="stockProduk">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="mainCategory">Main Category</label>
+                        <select id="mainCategory" name="kategoriMain" required>
+                            <option value="">Select Category</option>
+                            <option value="Indoor">Indoor Plants</option>
+                            <option value="Outdoor">Outdoor Plants</option>
+                            <option value="Seeds">Seeds</option>
+                            <option value="Tools">Gardening Tools</option>
+                            <option value="Accessories">Accessories</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="subCategory">Sub Category (Optional)</label>
+                        <select id="subCategory" name="kategoriSub">
+                            <option value="">Select Sub-Category</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Product Description</label>
+                    <textarea id="description" name="deskripsi"></textarea>
+                </div>
+
+                <div class="images-section">
+                    <h3>Product Images</h3>
+                    <p class="help-text">Click on an image to update it. Leave unchanged to keep the current image.</p>
+                    
+                    <div class="image-containers">
+                        <div class="image-container main-image-container">
+                            <div class="image-label">Main Image</div>
+                            <div class="image-preview" id="mainImagePreview">
+                                <img src="../../assets/images/placeholder-image.jpg" alt="Main product image">
+                                <div class="image-overlay">
+                                    <i class="fas fa-edit"></i>
+                                </div>
+                            </div>
+                            <input type="file" id="mainImageUpload" class="hidden-upload" accept="image/*">
+                        </div>
+                        
+                        <div class="thumbnails-container">
+                            <div class="thumb-container">
+                                <div class="image-label">Image 2</div>
+                                <div class="image-preview thumb" data-index="0">
+                                    <img src="../../assets/images/placeholder-image.jpg" alt="Product thumbnail">
+                                    <div class="image-overlay">
+                                        <i class="fas fa-edit"></i>
+                                    </div>
+                                </div>
+                                <input type="file" class="hidden-upload thumb-upload" accept="image/*">
+                            </div>
+                            
+                            <div class="thumb-container">
+                                <div class="image-label">Image 3</div>
+                                <div class="image-preview thumb" data-index="1">
+                                    <img src="../../assets/images/placeholder-image.jpg" alt="Product thumbnail">
+                                    <div class="image-overlay">
+                                        <i class="fas fa-edit"></i>
+                                    </div>
+                                </div>
+                                <input type="file" class="hidden-upload thumb-upload" accept="image/*">
+                            </div>
+                            
+                            <div class="thumb-container">
+                                <div class="image-label">Image 4</div>
+                                <div class="image-preview thumb" data-index="2">
+                                    <img src="../../assets/images/placeholder-image.jpg" alt="Product thumbnail">
+                                    <div class="image-overlay">
+                                        <i class="fas fa-edit"></i>
+                                    </div>
+                                </div>
+                                <input type="file" class="hidden-upload thumb-upload" accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" id="cancelBtn" class="btn cancel-btn">Cancel</button>
+                    <button type="submit" id="saveBtn" class="btn save-btn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification element -->
+    <div id="notification" class="notification" style="display: none;">
+        <span id="notification-message"></span>
+        <button id="notification-close" class="close-notification">&times;</button>
+    </div>
+
+    <!-- Jodit Editor JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jodit/3.24.2/jodit.min.js"></script>
+    <script src="../../assets/js/new-edit-product.js"></script>
+</body>
+</html>

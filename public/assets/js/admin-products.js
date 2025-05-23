@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td>${date}</td>
                     <td>
                         <div class="action-btns">
-                            <a href="editproduct.html?id=${product.id}" class="btn">
+                            <a href="edit-product?id=${product.id}" class="btn">
                                 <i class="fas fa-edit"></i> Edit
                             </a>
                             <button class="btn delete-btn" onclick="openDeleteModal(${product.id})">
