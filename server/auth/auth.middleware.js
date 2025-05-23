@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken');
 
 const requireAuth = (req, res, next) => {
   const token = req.cookies.token;
-
   if (!token) {
     return res.redirect('/admin');
   }
@@ -11,7 +10,6 @@ const requireAuth = (req, res, next) => {
     if (err) {
       return res.redirect('/admin');
     }
-
     req.user = decoded;
     next();
   });

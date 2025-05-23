@@ -115,18 +115,13 @@ async function checkAuthAndLoad() {
 document.addEventListener('DOMContentLoaded', () => {
   checkAuthAndLoad();
 
-  const logoutButton = document.querySelector('.dropdown-profile .dropdown-item:nth-child(2)');
+  const logoutButton = document.querySelector('.dropdown-profile .logout-btn');
   if (logoutButton) {
-    logoutButton.addEventListener('click', async () => {
-      try {
-        await fetch('/api/logout', {
-          method: 'POST',
-          credentials: 'include'
+    logoutButton.addEventListener('click', () => {
+      fetch('/auth/logout', { credentials: 'include' })
+        .finally(() => {
+          window.location.href = '/admin';
         });
-      } catch (err) {
-        console.error('Logout error:', err);
-      }
-      window.location.href = '/admin';
     });
   }
 });
