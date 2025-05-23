@@ -281,7 +281,6 @@ exports.updateProduct = (req, res) => {
         namaProduk,
         namaLatin,
         hargaProduk,
-        stockProduk,
         deskripsi,
         kategoriMain,
         kategoriSub,
@@ -296,7 +295,6 @@ exports.updateProduct = (req, res) => {
         namaProduk,
         namaLatin: namaLatin || null,
         hargaProduk: parseFloat(hargaProduk),
-        stockProduk: stockProduk !== undefined ? parseInt(stockProduk) : null,
         deskripsi: deskripsi || null,
         kategoriMain,
         kategoriSub: kategoriSub || null

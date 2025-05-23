@@ -150,7 +150,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('product-name').value = product.namaProduk || '';
         document.getElementById('latin-name').value = product.namaLatin || '';
         document.getElementById('price').value = product.hargaProduk || '';
-        document.getElementById('stock').value = product.stockProduk !== null ? product.stockProduk : '';
         
         // Categories
         if (product.kategoriMain) {
@@ -251,76 +250,99 @@ document.addEventListener('DOMContentLoaded', function() {
     
     async function handleFormSubmit(e) {
         e.preventDefault();
-        
+    
         // Show loading state
         saveBtn.disabled = true;
         saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-        
+    
         try {
             // Create FormData
             const formData = new FormData();
-            
+        
             // Add basic fields
             formData.append('namaProduk', document.getElementById('product-name').value);
             formData.append('namaLatin', document.getElementById('latin-name').value);
             formData.append('hargaProduk', document.getElementById('price').value);
-            
-            const stockValue = document.getElementById('stock').value;
-            if (stockValue !== '') {
-                formData.append('stockProduk', stockValue);
-            }
-            
+
             formData.append('kategoriMain', mainCategorySelect.value);
-            formData.append('kategoriSub', subCategorySelect.value);
+            formData.append('kategoriSub', subCategorySelect.value || ''); // Handle empty value
             formData.append('deskripsi', editor.value);
-            
+        
+            // Log the form data being sent
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ': ' + (pair[1] instanceof File ? 
+                    `File: ${pair[1].name} (${pair[1].size} bytes)` : pair[1]));
+            }
+        
             // Add image files if changed
             if (mainImageFile) {
-                formData.append('mainImage', mainImageFile);
+                formData.append('gambarUtama', mainImageFile);
             } else {
                 // Include the original image name if not changed
                 const mainImg = mainImagePreview.querySelector('img');
                 if (mainImg.dataset.originalName) {
                     formData.append('originalMainImage', mainImg.dataset.originalName);
+                    console.log(`Keeping original main image: ${mainImg.dataset.originalName}`);
                 }
             }
-            
-            // Add thumbnail files if changed
+        
+            // To this:
+            const imageFieldNames = ['gambarKedua', 'gambarKetiga', 'gambarKeempat'];
             thumbImageFiles.forEach((file, index) => {
                 if (file) {
-                    formData.append(`image${index + 2}`, file);
+                    formData.append(imageFieldNames[index], file);
+                    console.log(`Adding ${imageFieldNames[index]} file: ${file.name}`);
                 } else {
                     // Include the original thumbnail name if not changed
                     const thumbImg = thumbnailPreviews[index].querySelector('img');
                     if (thumbImg.dataset.originalName) {
-                        formData.append(`originalImage${index + 2}`, thumbImg.dataset.originalName);
+                        formData.append(`original${imageFieldNames[index].charAt(0).toUpperCase() + imageFieldNames[index].slice(1)}`, thumbImg.dataset.originalName);
+                        console.log(`Keeping original ${imageFieldNames[index]}: ${thumbImg.dataset.originalName}`);
                     }
                 }
             });
-            
+        
+            // Log request info
+            console.log(`Sending PUT request to: /api/products/${productId}`);
+        
             // Send update request
             const response = await fetch(`/api/products/${productId}`, {
                 method: 'PUT',
-                body: formData
+                body: formData // FormData will automatically set correct Content-Type with boundary
             });
-            
+        
+            console.log(`Response status: ${response.status}`);
+        
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to update product');
-            }
+                // Try to parse error response
+                let errorDetail = '';
+                try {
+                    const errorData = await response.json();
+                    console.error('Error response:', errorData);
+                    errorDetail = errorData.message || errorData.error || 'Unknown error';
+                } catch (jsonError) {
+                    // If the response is not valid JSON, try to get text
+                    const textResponse = await response.text();
+                    console.error('Non-JSON response:', textResponse);
+                    errorDetail = `Server error (${response.status})`;
+                }
             
+                throw new Error(errorDetail || 'Failed to update product');
+            }
+        
             // Show success message
             showNotification('Product updated successfully!', 'success');
-            
+        
             // Redirect back to products list after a short delay
             setTimeout(() => {
                 window.location.href = '/views/admin/admin-products.html';
             }, 2000);
-            
+        
         } catch (error) {
             console.error('Error updating product:', error);
             showNotification(`Failed to update product: ${error.message}`, 'error');
-            
+        
+        } finally {
             // Reset button
             saveBtn.disabled = false;
             saveBtn.innerHTML = 'Save Changes';
