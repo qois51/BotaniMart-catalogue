@@ -54,6 +54,9 @@ app.get('/add-product', requireAuth, requireAdmin, (req, res) => {
   res.sendFile(path.join(PATHS.admin, 'addProduct.html'));
 });
 
+app.get('/admin-products', requireAuth, requireAdmin, async (req, res) => {
+  res.sendFile(path.join(PATHS.admin, 'admin-products.html'));
+});
 app.get('/edit-product', requireAuth, requireAdmin, (req, res) => {
   res.sendFile(path.join(PATHS.admin, 'editProduct.html'));
 });
