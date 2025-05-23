@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   searchBar.appendChild(historyDropdown);
 
   try {
-    const response = await fetch('/products');
+    const response = await fetch('/api/products');
     if (!response.ok) throw new Error('Failed to fetch products');
     allProducts = await response.json();
   } catch (err) {
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // === FETCH & UPDATE DETAIL PRODUK ===
 async function fetchProductData(productId) {
   try {
-    const response = await fetch(`/products/${productId}`, {
+    const response = await fetch(`/api/products/${productId}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
     });
@@ -132,7 +132,7 @@ async function fetchProductData(productId) {
 
 async function incrementProductViews(productId) {
   try {
-    const response = await fetch(`/products/${productId}/views`, {
+    const response = await fetch(`/api/products/${productId}/views`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }
     });

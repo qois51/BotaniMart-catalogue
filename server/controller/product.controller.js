@@ -9,12 +9,9 @@ const { Product } = require(PATHS.db);
 const tempStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     const tempDir = path.join(__dirname, '../../public/uploads/temp');
-    
-    // Create directory if it doesn't exist
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir, { recursive: true });
     }
-    
     cb(null, tempDir);
   },
   filename: function (req, file, cb) {
@@ -28,12 +25,9 @@ const tempStorage = multer.diskStorage({
 const productStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     const productDir = path.join(__dirname, '../../public/uploads/products');
-    
-    // Create directory if it doesn't exist
     if (!fs.existsSync(productDir)) {
       fs.mkdirSync(productDir, { recursive: true });
     }
-    
     cb(null, productDir);
   },
   filename: function (req, file, cb) {
@@ -56,14 +50,14 @@ const fileFilter = (req, file, cb) => {
 const tempUpload = multer({ 
   storage: tempStorage,
   fileFilter: fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+  limits: { fileSize: 5 * 1024 * 1024 }
 }).single('image');
 
 // Multer setup for product uploads
 const productUpload = multer({ 
   storage: productStorage,
   fileFilter: fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+  limits: { fileSize: 5 * 1024 * 1024 }
 }).fields([
   { name: 'gambarUtama', maxCount: 1 },
   { name: 'gambarKedua', maxCount: 1 },
@@ -110,7 +104,6 @@ exports.createProduct = async (req, res) => {
     }
     
     try {
-      // Extract form data
       const {
         namaProduk,
         namaLatin,
@@ -123,94 +116,72 @@ exports.createProduct = async (req, res) => {
         kategoriSub
       } = req.body;
 
-      console.log('[CREATE PRODUCT] Received:', { 
-        namaProduk, 
-        hargaProduk, 
-        kategoriMain,
-        images: req.files ? Object.keys(req.files).length + ' files' : 'No files' 
-      });
-      
-      // Check for required fields
       if (!namaProduk || !hargaProduk || !deskripsi || !kategoriMain) {
-        console.log('[CREATE PRODUCT] Missing required fields');
         return res.status(400).json({ error: 'Field nama, harga, deskripsi, dan kategori utama wajib diisi' });
       }
 
-      // Check if main image was uploaded
       if (!req.files || !req.files.gambarUtama) {
-        console.log('[CREATE PRODUCT] Missing main image');
         return res.status(400).json({ error: 'Gambar utama produk wajib diunggah' });
       }
-      
-      try {
-        // Create product object with image paths
-        const newProduct = await Product.create({
-          namaProduk,
-          namaLatin: namaLatin || null,
-          hargaProduk: parseFloat(hargaProduk),
-          stockProduk: parseInt(stockProduk) || 0,
-          deskripsi,
-          specification: specification || null,
-          caraPerawatan: caraPerawatan || null,
-          kategoriMain,
-          kategoriSub: kategoriSub || null,
-          gambarUtama: req.files.gambarUtama[0].filename,
-          gambarKedua: req.files.gambarKedua ? req.files.gambarKedua[0].filename : null,
-          gambarKetiga: req.files.gambarKetiga ? req.files.gambarKetiga[0].filename : null,
-          gambarKeempat: req.files.gambarKeempat ? req.files.gambarKeempat[0].filename : null
-        });
 
-        console.log('[CREATE PRODUCT] Insert result:', {
-          id: newProduct.id,
-          name: newProduct.namaProduk,
-          images: {
-            main: newProduct.gambarUtama,
-            second: newProduct.gambarKedua,
-            third: newProduct.gambarKetiga,
-            fourth: newProduct.gambarKeempat
-          }
-        });
+      const newProduct = await Product.create({
+        namaProduk,
+        namaLatin: namaLatin || null,
+        hargaProduk: parseFloat(hargaProduk),
+        stockProduk: parseInt(stockProduk) || 0,
+        deskripsi,
+        specification: specification || null,
+        caraPerawatan: caraPerawatan || null,
+        kategoriMain,
+        kategoriSub: kategoriSub || null,
+        gambarUtama: req.files.gambarUtama[0].filename,
+        gambarKedua: req.files.gambarKedua ? req.files.gambarKedua[0].filename : null,
+        gambarKetiga: req.files.gambarKetiga ? req.files.gambarKetiga[0].filename : null,
+        gambarKeempat: req.files.gambarKeempat ? req.files.gambarKeempat[0].filename : null
+      });
 
-        res.status(201).json({ 
-          message: 'Produk berhasil ditambahkan', 
-          product: newProduct,
-          redirect: '/views/dashboard.html'
-        });
-      } catch (err) {
-        console.error('[CREATE PRODUCT] Database error:', err);
-        res.status(500).json({ error: 'Terjadi kesalahan saat menyimpan produk' });
-      }
-    } catch (error) {
-      console.error('[CREATE PRODUCT] Processing error:', error);
-      res.status(500).json({ error: `Terjadi kesalahan: ${error.message}` });
+      res.status(201).json({ 
+        message: 'Produk berhasil ditambahkan', 
+        product: newProduct,
+        redirect: '/views/dashboard.html'
+      });
+    } catch (err) {
+      console.error('Database error:', err);
+      res.status(500).json({ error: 'Terjadi kesalahan saat menyimpan produk' });
     }
   });
 };
 
-// In product.controller.js
 exports.uploadTempImage = (req, res) => {
-  // Debug log
-  console.log('Temp upload request received');
-  
   tempUpload(req, res, function(err) {
     if (err) {
-      console.error('Multer error:', err);
       return res.status(400).json({ error: `Upload error: ${err.message}` });
     }
-    
-    // Check if file exists
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
-    
-    console.log('File uploaded successfully:', req.file);
-    
-    // Return the path to the temporary file
     const tempPath = `/uploads/temp/${req.file.filename}`;
     res.json({ 
       success: true, 
-      tempPath: tempPath,
+      tempPath,
       filename: req.file.filename
     });
   });
+};
+
+exports.addProductView = async (req, res) => {
+  const productId = req.params.id;
+  try {
+    await Product.sequelize.query(
+      'UPDATE products SET views = views + 1 WHERE id = :id',
+      {
+        replacements: { id: productId },
+        type: Product.sequelize.QueryTypes.UPDATE
+      }
+    );
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error add product views:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
 };

@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // === FUNGSI PRODUK ===
   async function fetchAndRenderProducts() {
     try {
-      const response = await fetch('/products');
+      const response = await fetch('/api/products');
       if (!response.ok) {
         throw new Error('Failed to fetch products');
       }
@@ -286,7 +286,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function getCategory() {
     try {
-      const response = await fetch('/products');
+      const response = await fetch('/api/products');
       if (!response.ok) {
         throw new Error('Failed to fetch categories');
       }

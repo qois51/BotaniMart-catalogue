@@ -14,4 +14,10 @@ router.post('/', productController.createProduct);
 // Upload temporary image
 router.post('/upload-temp', productController.uploadTempImage);
 
+router.post("/:id/views", productController.addProductView);
+
+router.put('/:id', productController.updateProduct);
+
+router.delete('/:id', productController.deleteProduct);
+
 module.exports = router;
