@@ -47,7 +47,7 @@ app.get('/newadmin', (req, res) => {
 });
 
 app.get('/dashboard', requireAuth, (req, res) => {
-  res.sendFile(path.join(PATHS.admin, 'dashboard.html'));
+  res.sendFile(path.join(PATHS.admin, 'admin-products.html'));
 });
 
 app.get('/add-product', requireAuth, requireAdmin, (req, res) => {
