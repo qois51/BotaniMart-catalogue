@@ -159,22 +159,31 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 100px;
-  margin-left: 75px;
+  margin-top: 110px;
+  margin-left: 70px;
+  position: fixed;
 }
 
 /* Gambar besar: lebar sama dengan total thumbnail (526px) */
 .gambar-utama {
   position: relative;
-  width: 526px;    /* 4×124px + 3×10px */
-  height: 350px;   /* tetap 350px, jadi jadi rectangle */
+  width: 526px;
+  height: 350px;
+  background-color: rgb(244, 244, 244); /* abu-abu */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 10px;
 }
 
 /* Main image memenuhi container */
 .gambar-utama img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  display: block;
 }
 
 /* gambar kecil / thumbnail: center di bawah */
@@ -190,7 +199,8 @@ body {
   height: 124px;
   object-fit: cover;
   cursor: pointer;
-  transition: transform .2s;
+  transition: transform .3s;
+  border-radius: 10px;
 }
 
 .gambar-preview img:hover {
@@ -200,8 +210,9 @@ body {
 
 /* Kelompok informasi produk */
 .informasi-produk {
-  margin-top: 85px;
-  margin-left: 100px;
+  margin-top: 100px;
+  margin-left: 700px;
+  margin-bottom: 100px;
 }
 
 .judul-produk {
@@ -222,20 +233,8 @@ body {
 }
 
 /* Kelompok stokdkk */
-.stokdkk {
-  font-family: 'Poly';
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 15px;
-}
-
-.stokdkk h2 {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  font-weight: normal;
-  font-style: italic;
+#stok-info {
+  display: none;
 }
 
 /* background harga */
@@ -245,6 +244,7 @@ body {
   padding: 15px 20px;
   margin-top: 25px;
   box-sizing: border-box;
+  border-radius: 10px;
 }
 
 .harga {
@@ -285,11 +285,11 @@ body {
 }
 
 .float-btn {
-  width: 80px;
-  height: 80px;
+  width: 65px;
+  height: 65px;
   border-radius: 50%;
   color: black;
-  font-size: 50px;
+  font-size: 45px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -313,7 +313,8 @@ body {
 }
 
 .float-btn:hover {
-  opacity: 0.8;
+  transform: scale(1.2);
+  transition: transform 0.3s ease;
 }
 
 /* Add these styles to your CSS file */
