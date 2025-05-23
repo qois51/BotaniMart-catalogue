@@ -1,6 +1,7 @@
 const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
+const fsPromises = require('fs/promises');
 const { queryProducts } = require('../logic/queryProduct');
 const PATHS = require('../../config/paths');
 const { Product } = require(PATHS.db);
@@ -241,35 +242,79 @@ exports.updateProduct = async (req, res) => {
   });
 };
 
+/**
+ * Delete a product by ID
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 exports.deleteProduct = async (req, res) => {
   try {
-    const productId = parseInt(req.params.id);
-    if (isNaN(productId)) {
-      return res.status(400).json({ error: 'ID tidak valid' });
-    }
-
+    const productId = req.params.id;
+    
+    // Find the product to get image paths before deletion
     const product = await Product.findByPk(productId);
+    
     if (!product) {
-      return res.status(404).json({ error: 'Produk tidak ditemukan' });
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Product not found' 
+      });
     }
-
-    const imageFields = ['gambarUtama', 'gambarKedua', 'gambarKetiga', 'gambarKeempat'];
-    imageFields.forEach(field => {
-      const imagePath = product[field] ? path.join(__dirname, '../../public/uploads/products', product[field]) : null;
-      if (imagePath && fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath);
+    
+    // Store image paths to delete after product is removed from database
+    const imagesToDelete = [
+      product.gambarUtama,
+      product.gambarKedua,
+      product.gambarKetiga,
+      product.gambarKeempat
+    ].filter(img => img); // Filter out null/undefined values
+    
+    // Delete the product from database
+    const result = await Product.destroy({
+      where: { id: productId }
+    });
+    
+    if (result === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Product not found or already deleted' 
+      });
+    }
+    
+    // Delete associated image files
+    const uploadDir = path.join(__dirname, '../../public/uploads/products');
+    
+    // Delete each image asynchronously
+    const deletePromises = imagesToDelete.map(async (imageName) => {
+      if (!imageName) return;
+      
+      const imagePath = path.join(uploadDir, imageName);
+      
+      try {
+        await fsPromises.access(imagePath); // Check if file exists
+        await fsPromises.unlink(imagePath); // Delete the file
+        console.log(`Deleted image: ${imageName}`);
+      } catch (err) {
+        // File doesn't exist or other error - just log it
+        console.log(`Could not delete image ${imageName}: ${err.message}`);
       }
     });
-
-    await product.destroy();
-
-    res.json({ 
-      message: 'Produk berhasil dihapus',
-      redirect: '/views/dashboard.html'
+    
+    // Wait for all image deletions to complete
+    await Promise.all(deletePromises);
+    
+    // Return success response
+    return res.status(200).json({ 
+      success: true, 
+      message: 'Product successfully deleted' 
     });
-
+    
   } catch (error) {
-    console.error('Error hapus produk:', error);
-    res.status(500).json({ error: 'Terjadi kesalahan saat menghapus produk' });
+    console.error('Error deleting product:', error);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Failed to delete product', 
+      error: error.message 
+    });
   }
 };

@@ -111,10 +111,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Modal event listeners
-    confirmDeleteBtn.addEventListener('click', handleDeleteProduct);
     cancelDeleteBtn.addEventListener('click', () => {
         deleteModal.style.display = 'none';
         currentProductIdToDelete = null;
+    });
+
+    // Confirm delete button event listener
+    confirmDeleteBtn.addEventListener('click', function() {
+        if (currentProductIdToDelete) {
+            deleteProduct(currentProductIdToDelete);
+        }
     });
 
     // Load products on page load
@@ -266,31 +272,82 @@ document.addEventListener('DOMContentLoaded', function() {
         deleteModal.style.display = 'flex';
     };
     
-    async function handleDeleteProduct() {
-        if (!currentProductIdToDelete) return;
-        
+
+    // Function to delete a product
+    async function deleteProduct(productId) {
         try {
-            const response = await fetch(`/api/products/${currentProductIdToDelete}`, {
-                method: 'DELETE'
+            confirmDeleteBtn.disabled = true;
+            confirmDeleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+            
+            const response = await fetch(`/api/products/${productId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include' // Include cookies for authentication
             });
+
+            // Check content type to handle HTML responses
+            const contentType = response.headers.get('content-type');
             
-            if (!response.ok) {
-                throw new Error('Failed to delete product');
+            // Handle response
+            if (response.ok) {
+                // Success - remove product from DOM
+                const productElement = document.querySelector(`[data-product-id="${productId}"]`);
+                if (productElement) {
+                    productElement.remove();
+                }
+                
+                // Remove product from arrays
+                allProducts = allProducts.filter(p => p.id !== productId);
+                filteredProducts = filteredProducts.filter(p => p.id !== productId);
+                
+                // Update stats and re-render products
+                updateStats();
+                renderProducts();
+                
+                // Show success message
+                showNotification('Product deleted successfully', 'success');
+            } else {
+                // Error handling
+                const error = await response.json();
+                throw new Error(error.message || 'Failed to delete product');
             }
-            
-            // Remove product from arrays and update display
-            allProducts = allProducts.filter(p => p.id !== currentProductIdToDelete);
-            filteredProducts = filteredProducts.filter(p => p.id !== currentProductIdToDelete);
-            
-            updateStats();
-            renderProducts();
-            
-            // Close modal
-            deleteModal.style.display = 'none';
-            currentProductIdToDelete = null;
         } catch (error) {
             console.error('Error deleting product:', error);
-            alert('Failed to delete product. Please try again.');
+            showNotification(`Failed to delete product: ${error.message}`, 'error');
+        } finally {
+            // Hide modal and reset state
+            deleteModal.style.display = 'none';
+            currentProductIdToDelete = null;
+            confirmDeleteBtn.disabled = false;
+            confirmDeleteBtn.innerHTML = 'Delete';
         }
+    }
+
+        // Notification function
+    function showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
+            <span>${message}</span>
+            <button class="close-notification">&times;</button>
+        `;
+        
+        // Add to DOM
+        document.body.appendChild(notification);
+        
+        // Add event listener to close button
+        notification.querySelector('.close-notification').addEventListener('click', function() {
+            notification.remove();
+        });
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                notification.remove();
+            }
+        }, 5000);
     }
 });
