@@ -7,8 +7,10 @@ const cookieParser = require('cookie-parser');
 const { requireAuth, requireAdmin } = require(path.join(PATHS.server, 'auth', 'auth.middleware.js'));
 const authRoutes = require(path.join(PATHS.server, 'auth', 'auth.routes.js'));
 const productRoutes = require(path.join(PATHS.server, 'routes', 'product.routes.js'));
-const { setupDirectories } = require(path.join(PATHS.server, 'util', 'setup.js'));
+const { setupDirectories, cleanupTempFiles } = require(path.join(PATHS.server, 'util', 'setup.js'));
 setupDirectories();
+cleanupTempFiles(0);
+
 const livereload = require('livereload');
 const connectLivereload = require('connect-livereload');
 const { queryProducts } = require(path.join(PATHS.server, 'logic', 'queryProduct.js'));
