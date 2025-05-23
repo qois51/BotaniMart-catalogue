@@ -26,11 +26,6 @@ app.use(cookieParser());
 app.use('/api/products', productRoutes);
 app.use(express.static(path.join(PATHS.public)));
 
-app.get(['/views/dashboard.html', '/views/addProduct.html', '/views/editProduct.html'], (req, res) => {
-  const url = req.path.replace('.html', '');
-  res.redirect(url);
-});
-
 app.get('/', (req, res) => {
   res.sendFile(path.join(PATHS.public, 'views', 'index.html'));
 });
@@ -46,15 +41,15 @@ app.get('/newadmin', (req, res) => {
 });
 
 app.get('/dashboard', requireAuth, (req, res) => {
-  res.sendFile(path.join(PATHS.public, 'views', 'dashboard.html'));
+  res.sendFile(path.join(PATHS.admin, 'dashboard.html'));
 });
 
-app.get('/addProduct', requireAuth, requireAdmin, (req, res) => {
-  res.sendFile(path.join(PATHS.public, 'views', 'addProduct.html'));
+app.get('/add-product', requireAuth, requireAdmin, (req, res) => {
+  res.sendFile(path.join(PATHS.admin, 'addProduct.html'));
 });
 
-app.get('/editProduct', requireAuth, requireAdmin, (req, res) => {
-  res.sendFile(path.join(PATHS.public, 'views', 'editProduct.html'));
+app.get('/edit-product', requireAuth, requireAdmin, (req, res) => {
+  res.sendFile(path.join(PATHS.admin, 'editProduct.html'));
 });
 
 app.use('/auth', authRoutes);

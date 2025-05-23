@@ -70,7 +70,7 @@
     });
     const data = await res.json();
     if (res.ok) {
-      window.location.href = '/views/dashboard.html';
+      window.location.href = '/dashboard';
     } else {
       alert(data.error || 'Login gagal');
     }
