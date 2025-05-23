@@ -183,7 +183,7 @@ function updateProductDetails(data) {
   typeElement.textContent = data.category;
   stockElement.textContent = `Stok: ${data.stock}`;
   priceElement.textContent = `Rp${parseInt(data.price).toLocaleString('id-ID')}`;
-  descriptionElement.textContent = data.description;
+  descriptionElement.innerHTML = data.description;
 }
 
 function addPreviewImage(container, imagePath, id, baseUrl, defaultImage) {
