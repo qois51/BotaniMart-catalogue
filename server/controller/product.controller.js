@@ -276,7 +276,6 @@ exports.deleteProduct = async (req, res) => {
   }
 };
 
-// Then update your updateProduct function:
 exports.updateProduct = (req, res) => {
   productUpload(req, res, async function(err) {
     if (err) {
