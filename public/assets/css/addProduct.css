@@ -354,3 +354,40 @@ label {
 .thumb-container:hover .thumb-overlay {
   opacity: 1;
 }
+
+/* Add these styles for better list display */
+.jodit-wysiwyg ul {
+    padding-left: 2em;
+    margin: 0.5em 0;
+    list-style-type: disc;
+}
+
+.jodit-wysiwyg ol {
+    padding-left: 2em;
+    margin: 0.5em 0;
+    list-style-type: decimal;
+}
+
+.jodit-wysiwyg li {
+    margin-bottom: 0.3em;
+}
+
+/* Make the toolbar buttons more visible */
+.jodit-toolbar-button {
+    margin-right: 2px;
+}
+
+.jodit-toolbar-button__icon {
+    fill: #444;
+}
+
+/* Highlight buttons on hover */
+.jodit-toolbar-button:hover:not([disabled]) {
+    background-color: #f1f1f1;
+}
+
+/* Make active buttons more visible */
+.jodit-toolbar-button_active,
+.jodit-toolbar-button_active:hover {
+    background-color: #e6e6e6 !important;
+}

@@ -18,6 +18,10 @@ const db = require(PATHS.db);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Increase limit
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+
 // Setup Livereload
 const liveReloadServer = livereload.createServer();
 liveReloadServer.watch(PATHS.public);

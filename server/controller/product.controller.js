@@ -125,6 +125,7 @@ exports.createProduct = async (req, res) => {
         namaProduk,
         namaLatin: namaLatin || null,
         hargaProduk: parseFloat(hargaProduk),
+        stockProduk: 0,
         deskripsi: deskripsi || null,
         kategoriMain: kategoriMain,
         kategoriSub: kategoriSub,

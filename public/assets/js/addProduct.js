@@ -9,6 +9,64 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let mainImageFile = null;
     let thumbImageFiles = [null, null, null];
+
+    // Initialize Jodit Rich Text Editor with more specific configuration
+    const editor = Jodit.make('#description', {
+        height: 300,
+        enableDragAndDropFileToEditor: true,
+        buttons: [
+            'source', '|',
+            'bold', 'strikethrough', 'underline', 'italic', '|',
+            'ul', 'ol', '|',
+            'outdent', 'indent', '|',
+            'font', 'fontsize', 'brush', 'paragraph', '|',
+            'align', 'undo', 'redo', '|',
+            'hr', 'eraser', 'copyformat', '|',
+            'symbol', 'print'
+        ],
+        buttonsMD: [
+            'bold', 'italic', '|',
+            'ul', 'ol', '|',
+            'fontsize', 'brush', '|',
+            'align', 'undo', 'redo'
+        ],
+        buttonsSM: [
+            'bold', 'italic', '|',
+            'ul', 'ol', '|',
+            'undo', 'redo'
+        ],
+        buttonsMobile: [
+            'bold', 'italic', '|',
+            'ul', 'ol', '|',
+            'undo', 'redo'
+        ],
+        toolbarSticky: false, 
+        toolbarAdaptive: true,
+        placeholder: 'Enter product description with formatting...',
+        removeButtons: ['about'],
+        showTooltip: true,
+        showCharsCounter: false,
+        showWordsCounter: false,
+        showXPathInStatusbar: false,
+        // Add explicit list plugin options
+        list: {
+            defaultTag: 'ul',
+            controls: {
+                ul: {
+                    data: {
+                        tag: 'ul',
+                        command: 'insertUnorderedList'
+                    }
+                },
+                ol: {
+                    data: {
+                        tag: 'ol',
+                        command: 'insertOrderedList'
+                    }
+                }
+            }
+        }
+    });
     
     async function uploadToTemp(file) {
         try {
@@ -121,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const namaProduk = document.getElementById('product-name').value;
         const namaLatin = document.getElementById('latin-name').value;
         const hargaProduk = document.getElementById('price').value;
-        const deskripsi = document.getElementById('description').value;
+        const deskripsi = editor.value;
         const mainKategory = document.getElementById('mainCategory').value;
         const subKategory = document.getElementById('subCategory').value;
 
