@@ -286,10 +286,12 @@ body {
 
 .produk img {
   width: 100%;
-  height: 300px; /* Pastikan tinggi dan lebar kira-kira sama agar persegi */
-  object-fit: cover;
+  height: 240px;
+  object-fit: contain; /* Menghindari gambar stretch */
+  background-color: rgb(244, 244, 244); /* Isi ruang kosong dengan warna abu terang */
   border-radius: 10px;
   transition: transform 0.3s ease;
+  padding: 10px; /* Tambahkan sedikit padding agar tidak mepet */
 }
 
 .produk img:hover {
@@ -310,7 +312,7 @@ body {
   font-weight: bold; /* Memberikan ketebalan pada harga */
 }
 
-/* Floating Button */
+/* Kontak */
 .floating-box {
   position: fixed;
   bottom: 20px;
@@ -321,11 +323,11 @@ body {
 }
 
 .float-btn {
-  width: 80px;
-  height: 80px;
+  width: 65px;
+  height: 65px;
   border-radius: 50%;
   color: black;
-  font-size: 50px;
+  font-size: 45px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -349,17 +351,20 @@ body {
 }
 
 .float-btn:hover {
-  opacity: 0.8;
+  transform: scale(1.2);
+  transition: transform 0.3s ease;
 }
 
-/* Add these styles to your CSS file */
-
-.dropdown-btn:hover{
-  background-color: #1e6656;
-  color: #ffffff;
-  border-radius: 10px;
+.dropdown-btn.active {
+  background-color: #e8f5e9;
+  font-weight: bold;
 }
 
 .dropdown-btn.dropdown-open {
   border-bottom: 1px solid #ddd;
+}
+
+.active-subcategory {
+  font-weight: bold;
+  color: #4CAF50;
 }
