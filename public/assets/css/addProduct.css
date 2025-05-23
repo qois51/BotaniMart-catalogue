@@ -270,7 +270,7 @@ label {
 
 .add-product {
   padding: 12px 24px;
-  background-color: var(--primary-color);
+  background-color: #1e6656;
   color: white;
   border: none;
   border-radius: 4px;
@@ -280,7 +280,7 @@ label {
 }
 
 .add-product:hover {
-  background-color: var(--primary-dark);
+  background-color: #357f78;
 }
 
 /* Responsive */

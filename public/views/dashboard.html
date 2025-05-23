@@ -1,50 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Dashboard</title>
-  <link rel="stylesheet" href="../assets/css/dashboard.css">
+  <link rel="stylesheet" href="../assets/css/dashboard.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+  />
 </head>
-
 <body>
 <div class="header">
-  <div class="menu-user-header">
-    <i class="fas fa-user"></i> username
+  <div class="judul">
+    <img src="../uploads/Botani mart.png" alt="Botani Mart Logo" class="logo" />
   </div>
-  <div class="judul">Dashboard</div>
+  <div class="judul-dashboard">Dashboard</div>
+  <div class="menu-user-header">username</div>
   <div class="profile-icon">
     <i class="fas fa-user-circle"></i>
     <div class="dropdown-profile">
-      <div class="dropdown-item">
-        <i class="fas fa-eye"></i> Show Profile
-      </div>
       <div class="dropdown-item">
         <i class="fas fa-sign-out-alt"></i> Logout
       </div>
     </div>
   </div>
-  </div>
 </div>
+
 
   <div class="main-content">
     <div class="sidebar">
-    <div class="menu-middle">
+      <div class="menu-middle">
         <div class="menu-plus">
-        <i class="fas fa-plus"></i><a href="../views/addProduct.html">Add</a>
+          <i class="fas fa-plus"></i><a href="../views/addProduct.html">Add</a>
         </div>
         <div class="menu-edit">
-        <i class="fas fa-edit"></i><a href="../views/editProduct.html">Edit & Delete</a>
+          <i class="fas fa-edit"></i><a href="../views/editProduct.html">Edit & Delete</a>
         </div>
+      </div>
     </div>
-    </div>
-    
+
+    <div class="sidebar-2"></div>
+
     <div class="dashboard-content">
       <div class="chart">
         <h3>Trend Trafik Produk</h3>
         <canvas id="trafficChart"></canvas>
-    </div>
+      </div>
 
       <div class="product-table-wrapper">
         <table class="product-table">
