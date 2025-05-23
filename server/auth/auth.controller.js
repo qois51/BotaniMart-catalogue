@@ -3,8 +3,6 @@ const jwt = require('jsonwebtoken');
 const PATHS = require('../../config/paths');
 const { Admin } = require(PATHS.db);
 
-
-// Improved password validation with detailed error
 function isValidPassword(password) {
   if (!password) {
     return { valid: false, error: 'Password tidak boleh kosong' };
@@ -39,29 +37,27 @@ exports.login = async (req, res) => {
       return res.status(400).json({ error: 'Username tidak ditemukan' });
     }
 
-    if (user.password !== password) { // In production, use bcrypt to compare
+    if (user.password !== password) {
       return res.status(400).json({ error: 'Password salah' });
     }
 
-    // Create session
-    req.session.user = {
-      userId: user.username,
-      name: user.name,
-      email: user.email,
-      isAdmin: true // Set based on user role if needed
-    };
-
-    // Also generate JWT for API access
     const token = jwt.sign(
-      { userId: user.username, username: user.username }, 
+      { userId: user.username, username: user.username, isAdmin: true }, 
       'secretkey', 
       { expiresIn: '24h' }
     );
 
-    // Send success response
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'Strict',
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+      path: '/'
+    });
+
+    // Send success response (no need to send token in body)
     res.json({ 
-      message: 'Login berhasil', 
-      token,
+      message: 'Login berhasil',
       user: {
         name: user.name,
         email: user.email
@@ -73,15 +69,15 @@ exports.login = async (req, res) => {
   }
 };
 
-// Logout function
 exports.logout = (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json({ error: 'Failed to logout' });
-    }
-    res.clearCookie('connect.sid'); // Clear session cookie
-    res.json({ message: 'Logged out successfully' });
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: false,
+    sameSite: 'Strict',
+    path: '/'
   });
+
+  res.json({ message: 'Logout berhasil' });
 };
 
 exports.checkEmailReset = async (req, res) => {

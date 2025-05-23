@@ -3,19 +3,14 @@ const PATHS = require('./config/paths');
 
 const express = require('express');
 const bodyParser = require('body-parser');
-
-const { configureSession, requireAuth, requireAdmin } = require(path.join(PATHS.server, 'auth', 'auth.middleware.js'));
-
+const cookieParser = require('cookie-parser');
+const { requireAuth, requireAdmin } = require(path.join(PATHS.server, 'auth', 'auth.middleware.js'));
 const authRoutes = require(path.join(PATHS.server, 'auth', 'auth.routes.js'));
-
 const productRoutes = require(path.join(PATHS.server, 'routes', 'product.routes.js'));
-
 const { setupDirectories } = require(path.join(PATHS.server, 'util', 'setup.js'));
 setupDirectories();
-
 const livereload = require('livereload');
 const connectLivereload = require('connect-livereload');
-
 const { queryProducts } = require(path.join(PATHS.server, 'logic', 'queryProduct.js'));
 const db = require(PATHS.db);
 const app = express();
@@ -25,17 +20,16 @@ const PORT = process.env.PORT || 3000;
 const liveReloadServer = livereload.createServer();
 liveReloadServer.watch(PATHS.public);
 app.use(connectLivereload());
-
-// Middleware to parse JSON
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-configureSession(app);
-
+app.use(cookieParser());
 app.use('/api/products', productRoutes);
-
-// Serve static files
 app.use(express.static(path.join(PATHS.public)));
+
+app.get(['/views/dashboard.html', '/views/addProduct.html', '/views/editProduct.html'], (req, res) => {
+  const url = req.path.replace('.html', '');
+  res.redirect(url);
+});
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(PATHS.public, 'views', 'index.html'));
@@ -51,22 +45,19 @@ app.get('/newadmin', (req, res) => {
   res.sendFile(path.join(PATHS.public, 'views', 'new-admin.html'));
 });
 
-// Auth routes
-app.use('/auth', authRoutes);
-
-// Route to get current user information
-app.get('/auth/current-user', (req, res) => {
-  if (req.session && req.session.user) {
-    res.json({
-      loggedIn: true,
-      user: req.session.user,
-    });
-  } else {
-    res.json({
-      loggedIn: false,
-    });
-  }
+app.get('/dashboard', requireAuth, (req, res) => {
+  res.sendFile(path.join(PATHS.public, 'views', 'dashboard.html'));
 });
+
+app.get('/addProduct', requireAuth, requireAdmin, (req, res) => {
+  res.sendFile(path.join(PATHS.public, 'views', 'addProduct.html'));
+});
+
+app.get('/editProduct', requireAuth, requireAdmin, (req, res) => {
+  res.sendFile(path.join(PATHS.public, 'views', 'editProduct.html'));
+});
+
+app.use('/auth', authRoutes);
 
 // Notify browser on changes
 liveReloadServer.server.once('connection', () => {
