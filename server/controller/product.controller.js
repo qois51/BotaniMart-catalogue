@@ -66,6 +66,23 @@ const productUpload = multer({
   { name: 'gambarKeempat', maxCount: 1 }
 ]);
 
+// Add this helper function at the top of your file
+async function deleteImageFile(filename) {
+  if (!filename) return;
+  
+  const imagePath = path.join(__dirname, '../../public/uploads/products', filename);
+  
+  try {
+    await fsPromises.access(imagePath); // Check if file exists
+    await fsPromises.unlink(imagePath); // Delete the file
+    console.log(`Deleted image: ${filename}`);
+    return true;
+  } catch (err) {
+    console.log(`Could not delete image ${filename}: ${err.message}`);
+    return false;
+  }
+}
+
 // Controller methods
 exports.getAllProducts = async (req, res) => {
   try {
@@ -259,7 +276,7 @@ exports.deleteProduct = async (req, res) => {
   }
 };
 
-// Update a product by ID
+// Then update your updateProduct function:
 exports.updateProduct = (req, res) => {
   productUpload(req, res, async function(err) {
     if (err) {
@@ -283,13 +300,14 @@ exports.updateProduct = (req, res) => {
         hargaProduk,
         deskripsi,
         kategoriMain,
-        kategoriSub,
-        originalMainImage,
-        originalImage2,
-        originalImage3,
-        originalImage4
+        kategoriSub
       } = req.body;
-      
+
+      // Validation - same as in createProduct
+      if (!namaProduk || !hargaProduk || !kategoriMain) {
+        return res.status(400).json({ error: 'Field nama, harga, and kategori utama wajib diisi' });
+      }
+
       // Prepare update data
       const updateData = {
         namaProduk,
@@ -297,57 +315,71 @@ exports.updateProduct = (req, res) => {
         hargaProduk: parseFloat(hargaProduk),
         deskripsi: deskripsi || null,
         kategoriMain,
-        kategoriSub: kategoriSub || null
+        kategoriSub: kategoriSub || '' // Use empty string to avoid null constraint violation
       };
       
-      // Handle uploaded images or keep original ones
-      if (req.files.mainImage) {
-        updateData.gambarUtama = req.files.mainImage[0].filename;
-        
-        // Delete the old image if it exists
+      // Handle images - similar to createProduct but checking for existing images
+      
+      // Main image handling
+      if (req.files && req.files.gambarUtama) {
+        // New image uploaded - save new filename and delete old image
+        updateData.gambarUtama = req.files.gambarUtama[0].filename;
         if (product.gambarUtama) {
-          deleteImageFile(product.gambarUtama);
+          await deleteImageFile(product.gambarUtama);
         }
-      } else if (originalMainImage) {
-        // Keep the original image
-        updateData.gambarUtama = originalMainImage;
       }
+      // If no new image uploaded, keep the existing one
       
-      if (req.files.image2) {
-        updateData.gambarKedua = req.files.image2[0].filename;
-        
-        // Delete the old image if it exists
+      // Second image handling
+      if (req.files && req.files.gambarKedua) {
+        // New second image uploaded - save new filename and delete old image
+        updateData.gambarKedua = req.files.gambarKedua[0].filename;
         if (product.gambarKedua) {
-          deleteImageFile(product.gambarKedua);
+          await deleteImageFile(product.gambarKedua);
         }
-      } else if (originalImage2) {
-        // Keep the original image
-        updateData.gambarKedua = originalImage2;
+      } else if (req.body.removeGambarKedua === 'true') {
+        // Client requested to remove this image
+        if (product.gambarKedua) {
+          await deleteImageFile(product.gambarKedua);
+        }
+        updateData.gambarKedua = null;
       }
+      // If neither condition is true, keep the existing image (don't include in updateData)
       
-      if (req.files.image3) {
-        updateData.gambarKetiga = req.files.image3[0].filename;
-        
-        // Delete the old image if it exists
+      // Third image handling
+      if (req.files && req.files.gambarKetiga) {
+        // New third image uploaded - save new filename and delete old image
+        updateData.gambarKetiga = req.files.gambarKetiga[0].filename;
         if (product.gambarKetiga) {
-          deleteImageFile(product.gambarKetiga);
+          await deleteImageFile(product.gambarKetiga);
         }
-      } else if (originalImage3) {
-        // Keep the original image
-        updateData.gambarKetiga = originalImage3;
+      } else if (req.body.removeGambarKetiga === 'true') {
+        // Client requested to remove this image
+        if (product.gambarKetiga) {
+          await deleteImageFile(product.gambarKetiga);
+        }
+        updateData.gambarKetiga = null;
       }
+      // If neither condition is true, keep the existing image (don't include in updateData)
       
-      if (req.files.image4) {
-        updateData.gambarKeempat = req.files.image4[0].filename;
-        
-        // Delete the old image if it exists
+      // Fourth image handling
+      if (req.files && req.files.gambarKeempat) {
+        // New fourth image uploaded - save new filename and delete old image
+        updateData.gambarKeempat = req.files.gambarKeempat[0].filename;
         if (product.gambarKeempat) {
-          deleteImageFile(product.gambarKeempat);
+          await deleteImageFile(product.gambarKeempat);
         }
-      } else if (originalImage4) {
-        // Keep the original image
-        updateData.gambarKeempat = originalImage4;
+      } else if (req.body.removeGambarKeempat === 'true') {
+        // Client requested to remove this image
+        if (product.gambarKeempat) {
+          await deleteImageFile(product.gambarKeempat);
+        }
+        updateData.gambarKeempat = null;
       }
+      // If neither condition is true, keep the existing image (don't include in updateData)
+      
+      // Log update data for debugging
+      console.log('Updating product with data:', updateData);
       
       // Update the product in the database
       await product.update(updateData);
@@ -360,12 +392,16 @@ exports.updateProduct = (req, res) => {
           id: product.id,
           namaProduk: product.namaProduk,
           updatedAt: product.updatedAt
-        }
+        },
+        redirect: '/admin-products.html'  // Include redirect path for frontend
       });
       
     } catch (error) {
       console.error('Error updating product:', error);
-      res.status(500).json({ error: 'Failed to update product' });
+      res.status(500).json({ 
+        error: 'Failed to update product', 
+        details: error.message
+      });
     }
   });
 };
