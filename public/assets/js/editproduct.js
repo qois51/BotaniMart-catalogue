@@ -1,208 +1,297 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('.form-section');
-    const addProductBtn = document.querySelector('.add-product');
-    const mainImageElement = document.querySelector('.main-image');
-    const mainImageContainer = document.querySelector('.main-image-container');
-    const mainImageUpload = document.getElementById('mainImageUpload');
-    const thumbnails = document.querySelectorAll('.thumb');
-    const thumbUploads = document.querySelectorAll('.thumb-container input[type="file"]');
-    
-    let mainImageFile = null;
-    let thumbImageFiles = [null, null, null];
-    
-    async function uploadToTemp(file) {
-        try {
-            console.log('Starting upload for file:', file.name);
-        
-            const formData = new FormData();
-            formData.append('image', file);
-        
-            console.log('Sending request to /api/upload-temp');
-            const response = await fetch('/api/products/upload-temp', {
-                method: 'POST',
-                body: formData
-            });
-        
-            console.log('Response status:', response.status);
-        
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Server responded with error:', errorText);
-                throw new Error(`Upload failed: ${response.status} ${errorText}`);
-            }
-        
-            const data = await response.json();
-            console.log('Upload successful, server response:', data);
-            return data.tempPath;
-        } catch (error) {
-            console.error('Upload error details:', error);
-            alert(`Failed to upload image: ${error.message}`);
-            return null;
-        }
+document.addEventListener('DOMContentLoaded', async () => {
+  const form = document.getElementById('productForm');
+  const updateProductBtn = document.querySelector('.add-product'); // sesuaikan dg class submit di HTML
+  const deleteBtn = document.querySelector('.delete-btn');
+
+  // Image elements
+  const mainImageElement = document.getElementById('mainImagePreview');
+  const mainImageUpload = document.getElementById('mainImageUpload');
+
+  const thumbPreviews = [
+    document.getElementById('thumb1Preview'),
+    document.getElementById('thumb2Preview'),
+    document.getElementById('thumb3Preview'),
+  ];
+  const thumbUploads = [
+    document.getElementById('thumb1Upload'),
+    document.getElementById('thumb2Upload'),
+    document.getElementById('thumb3Upload'),
+  ];
+
+  // Container untuk menampilkan alert error di bawah judul-sub
+  const judulSub = document.getElementById('judul-sub');
+  let alertContainer = document.createElement('div');
+  alertContainer.style.color = 'red';
+  alertContainer.style.marginTop = '8px';
+  judulSub.insertAdjacentElement('afterend', alertContainer);
+
+  // Ambil id dari query param
+  const urlParams = new URLSearchParams(window.location.search);
+  const productId = urlParams.get('id');
+
+  if (!productId) {
+    alertContainer.textContent = 'Error: Parameter id tidak ditemukan di URL.';
+    form.style.display = 'none';
+    return;
+  }
+
+  // State file yang diupload (null jika belum diubah)
+  let mainImageFile = null;
+  let thumbImageFiles = [null, null, null];
+
+  // Fungsi fetch produk
+  async function fetchProduct(id) {
+    try {
+      const res = await fetch(`/api/products/${id}`);
+      if (!res.ok) throw new Error(`Produk dengan id ${id} tidak ditemukan`);
+      return await res.json();
+    } catch (e) {
+      throw e;
     }
-    
-    // Set up image upload for main image
-    mainImageContainer.addEventListener('click', function() {
-        mainImageUpload.click();
+  }
+
+  // Fungsi reset gambar ke placeholder
+  function resetImage(imgElement) {
+    imgElement.src = '../uploads/placeholder.jpeg';
+    imgElement.style.display = 'block';
+  }
+
+  // Fungsi upload gambar ke temp
+  async function uploadToTemp(file) {
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      const response = await fetch('/api/products/upload-temp', {
+        method: 'POST',
+        body: formData
+      });
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`Upload gagal: ${response.status} ${errText}`);
+      }
+      const data = await response.json();
+      return data.tempPath;
+    } catch (error) {
+      alert(`Gagal upload gambar: ${error.message}`);
+      return null;
+    }
+  }
+
+  // Load data produk dan isi form
+  try {
+    const product = await fetchProduct(productId);
+
+    document.getElementById('product-name').value = product.namaProduk || '';
+    document.getElementById('latin-name').value = product.namaLatin || '';
+    document.getElementById('stock').value = product.stockProduk || 0;
+    document.getElementById('price').value = product.hargaProduk || 0;
+    document.getElementById('description').value = product.deskripsi || '';
+    document.getElementById('Specification').value = product.specification || '';
+    document.getElementById('perawatan').value = product.caraPerawatan || '';
+    document.getElementById('mainCategory').value = product.kategoriMain || '';
+    document.getElementById('subCategory').value = product.kategoriSub || '';
+
+    // Set gambar utama
+    mainImageElement.src = `/uploads/products/${product.gambarUtama}`;
+    mainImageFile = null;
+
+    // Set thumbnails
+    const thumbFilenames = [
+      product.gambarKedua,
+      product.gambarKetiga,
+      product.gambarKeempat
+    ];
+    thumbFilenames.forEach((filename, i) => {
+      if (filename) {
+        thumbPreviews[i].src = `/uploads/products/${filename}`;
+      } else {
+        resetImage(thumbPreviews[i]);
+      }
     });
-    
-    mainImageUpload.addEventListener('change', async function(e) {
-        const file = this.files[0];
+
+  } catch (error) {
+    alertContainer.textContent = `Error: ${error.message}`;
+    form.style.display = 'none';
+    return;
+  }
+
+  // Event klik di gambar utama untuk pilih file
+  mainImageElement.addEventListener('click', () => mainImageUpload.click());
+  // Klik overlay juga bisa kalau kamu mau tambahkan
+
+  // Event upload gambar utama
+  mainImageUpload.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Preview dulu
+      const reader = new FileReader();
+      reader.onload = e => {
+        mainImageElement.src = e.target.result;
+        mainImageElement.style.opacity = '0.5';
+      };
+      reader.readAsDataURL(file);
+
+      const tempPath = await uploadToTemp(file);
+      if (tempPath) {
+        mainImageFile = file;
+        mainImageElement.src = tempPath;
+        mainImageElement.style.opacity = '1';
+      } else {
+        mainImageElement.style.opacity = '1';
+      }
+    }
+  });
+
+  // Event klik dan upload thumbnail
+  thumbPreviews.forEach((img, i) => {
+    img.addEventListener('click', () => thumbUploads[i].click());
+  });
+
+  thumbUploads.forEach((input, i) => {
+    input.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          thumbPreviews[i].src = e.target.result;
+          thumbPreviews[i].style.opacity = '0.5';
+        };
+        reader.readAsDataURL(file);
+
+        const tempPath = await uploadToTemp(file);
+        if (tempPath) {
+          thumbImageFiles[i] = file;
+          thumbPreviews[i].src = tempPath;
+          thumbPreviews[i].style.opacity = '1';
+        } else {
+          thumbPreviews[i].style.opacity = '1';
+        }
+      }
+    });
+  });
+
+  // Fungsi removeImage, juga perlu override tombol × yang sudah ada di HTML
+  window.removeImage = function(button) {
+    const container = button.parentElement;
+    const img = container.querySelector('img');
+    if (img) {
+      if (confirm('Hapus gambar ini?')) {
+        img.src = '../uploads/placeholder.jpeg';
+        img.style.display = 'block';
+
+        // Reset file terkait jika ini main image atau thumbnails
+        if (img === mainImageElement) {
+          mainImageFile = null;
+          mainImageUpload.value = '';
+        } else {
+          thumbPreviews.forEach((thumbImg, i) => {
+            if (thumbImg === img) {
+              thumbImageFiles[i] = null;
+              thumbUploads[i].value = '';
+            }
+          });
+        }
+      }
+    }
+  };
+
+  // Handle form submit (update produk)
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Ambil value input
+    const namaProduk = document.getElementById('product-name').value.trim();
+    const namaLatin = document.getElementById('latin-name').value.trim();
+    const stockProduk = document.getElementById('stock').value;
+    const hargaProduk = document.getElementById('price').value;
+    const deskripsi = document.getElementById('description').value.trim();
+    const specification = document.getElementById('Specification').value.trim();
+    const caraPerawatan = document.getElementById('perawatan').value.trim();
+    const kategoriMain = document.getElementById('mainCategory').value.trim();
+    const kategoriSub = document.getElementById('subCategory').value.trim();
+
+    // Validasi sederhana
+    if (!namaProduk || !hargaProduk || !stockProduk || !deskripsi || !kategoriMain || !kategoriSub) {
+      alert('Harap lengkapi semua field wajib yang bertanda *');
+      return;
+    }
+
+    if (!mainImageElement.src || mainImageElement.src.includes('placeholder.jpeg')) {
+      alert('Silakan pilih gambar utama produk!');
+      return;
+    }
+
+    try {
+      updateProductBtn.disabled = true;
+      updateProductBtn.textContent = 'Memperbarui...';
+
+      const formData = new FormData();
+      formData.append('namaProduk', namaProduk);
+      formData.append('namaLatin', namaLatin);
+      formData.append('stockProduk', stockProduk);
+      formData.append('hargaProduk', hargaProduk);
+      formData.append('deskripsi', deskripsi);
+      formData.append('specification', specification);
+      formData.append('caraPerawatan', caraPerawatan);
+      formData.append('kategoriMain', kategoriMain);
+      formData.append('kategoriSub', kategoriSub);
+
+      // Upload file baru jika ada
+      if (mainImageFile) {
+        formData.append('gambarUtama', mainImageFile);
+      }
+      thumbImageFiles.forEach((file, i) => {
         if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                mainImageElement.src = e.target.result;
-                mainImageElement.style.opacity = '0.5';
-            };
-            reader.readAsDataURL(file);
-            
-            // Then upload to temp location
-            try {
-                mainImageElement.style.opacity = '0.5';
-                const tempPath = await uploadToTemp(file);
-                if (tempPath) {
-                    // Store the file for later form submission
-                    mainImageFile = file;
-                    // Update the preview with the temp image from server
-                    mainImageElement.src = tempPath;
-                    mainImageElement.style.opacity = '1'; // Restore opacity
-                    console.log('Main image set to temp path:', tempPath);
-                }
-            } catch (error) {
-                mainImageElement.style.opacity = '1'; // Restore opacity on error
-                console.error('Error in temp upload:', error);
-            }
+          formData.append(`gambarKeduaKetigaKeempat${i + 1}`, file); 
+          // pastikan backend bisa handle nama field ini
         }
-    });
-    
-    // Set up thumbnail uploads
-    thumbUploads.forEach((upload, index) => {
-        const thumbContainer = upload.closest('.thumb-container');
-        const thumbPreview = thumbContainer.querySelector('.thumb');
-        
-        thumbContainer.addEventListener('click', function() {
-            upload.click();
-        });
-        
-        upload.addEventListener('change', async function(e) {
-            const file = this.files[0];
-            if (file) {
-                // First, show the image locally for preview
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    thumbPreview.src = e.target.result;
-                    thumbPreview.style.opacity = '0.5'; // Dim the image to indicate loading
-                };
-                reader.readAsDataURL(file);
-                
-                // Then upload to temp location
-                try {
-                    thumbPreview.style.opacity = '0.5'; // Dim the image to indicate loading
-                    const tempPath = await uploadToTemp(file);
-                    if (tempPath) {
-                        // Store the file for later form submission
-                        thumbImageFiles[index] = file;
-                        // Update the preview with the temp image from server
-                        thumbPreview.src = tempPath;
-                        thumbPreview.style.opacity = '1'; // Restore opacity
-                        console.log(`Thumbnail ${index+1} set to temp path:`, tempPath);
-                    }
-                } catch (error) {
-                    thumbPreview.style.opacity = '1'; // Restore opacity on error
-                    console.error('Error in temp upload:', error);
-                }
-            }
-        });
-    });
-    
-    // Form submission
-    addProductBtn.addEventListener('click', async () => {
-        // Get form values using the correct IDs from your HTML
-        const namaProduk = document.getElementById('product-name').value;
-        const namaLatin = document.getElementById('latin-name').value;
-        const stockProduk = document.getElementById('stock').value;
-        const hargaProduk = document.getElementById('price').value;
-        const deskripsi = document.getElementById('description').value;
-        const specification = document.getElementById('Specification').value;
-        const perawatan = document.getElementById('perawatan').value;
-        const mainKategory = document.getElementById('mainCategory').value;
-        const subKategory = document.getElementById('subCategory').value;
+      });
 
-        // Validate form with updated fields
-        if (!namaProduk || !hargaProduk || !stockProduk || !deskripsi) {
-            alert('Silakan lengkapi field yang wajib diisi!');
-            return;
-        }
-        
-        // Check if main image is selected
-        if (!mainImageFile) {
-            alert('Silakan pilih gambar utama produk!');
-            return;
-        }
-        
-        try {
-            // Show loading state
-            addProductBtn.disabled = true;
-            addProductBtn.textContent = 'Menambahkan...';
-            
-            // Create FormData object to handle file uploads
-            const formData = new FormData();
-            formData.append('namaProduk', namaProduk);
-            formData.append('namaLatin', namaLatin);
-            formData.append('stockProduk', stockProduk);
-            formData.append('hargaProduk', hargaProduk);
-            formData.append('deskripsi', deskripsi);
-            formData.append('specification', specification);
-            formData.append('caraPerawatan', perawatan);
-            formData.append('kategoriMain', mainKategory);
-            formData.append('kategoriSub', subKategory);
-            
-            // Append images
-            formData.append('gambarUtama', mainImageFile);
-            
-            // Append thumbnail images if they exist
-            thumbImageFiles.forEach((file, index) => {
-                if (file) {
-                    const fieldName = ['gambarKedua', 'gambarKetiga', 'gambarKeempat'][index];
-                    formData.append(fieldName, file);
-                }
-            });
+      const res = await fetch(`/api/products/${productId}`, {
+        method: 'PUT',
+        body: formData
+      });
 
-            // Log form data (for debugging)
-            console.log('Form data prepared:');
-            for (const pair of formData.entries()) {
-                if (pair[1] instanceof File) {
-                    console.log(`${pair[0]}: File - ${pair[1].name} (${pair[1].type}, ${pair[1].size} bytes)`);
-                } else {
-                    console.log(`${pair[0]}: ${pair[1]}`);
-                }
-            }
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Gagal memperbarui produk');
+      }
 
-            
-            // Send the data to the server for final product creation
-            const response = await fetch('/api/products', {
-                method: 'POST',
-                body: formData,
-            });
-            
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to add product');
-            }
-            
-            const result = await response.json();
-            alert('Produk berhasil ditambahkan!');
-            
-            // Redirect to dashboard or product list
-            window.location.href = '/views/dashboard.html';
-            
-        } catch (error) {
-            console.error('Error submitting product:', error);
-            alert(`Error: ${error.message}`);
-            
-            // Reset button state
-            addProductBtn.disabled = false;
-            addProductBtn.textContent = 'Add Product';
-        }
-    });
+      alert('Produk berhasil diperbarui!');
+      window.location.href = '/views/dashboard.html';
+
+    } catch (error) {
+      alert(`Error: ${error.message}`);
+      updateProductBtn.disabled = false;
+      updateProductBtn.textContent = 'Finish Edit';
+    }
+  });
+
+  // Handle delete button
+  deleteBtn.addEventListener('click', async () => {
+    if (!confirm('Apakah kamu yakin ingin menghapus produk ini?')) return;
+
+    try {
+      deleteBtn.disabled = true;
+      deleteBtn.textContent = 'Menghapus...';
+
+      const response = await fetch(`/api/products/${productId}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Gagal menghapus produk');
+      }
+
+      alert('Produk berhasil dihapus!');
+      window.location.href = '/views/dashboard.html';
+
+    } catch (error) {
+      alert(`Error: ${error.message}`);
+      deleteBtn.disabled = false;
+      deleteBtn.textContent = 'Delete Product';
+    }
+  });
+
 });
