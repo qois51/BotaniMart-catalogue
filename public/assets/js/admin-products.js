@@ -555,7 +555,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div>${product.namaProduk}</div>
                         <small class="latin-name">${product.namaLatin || ''}</small>
                     </td>
-                    <td>${product.kategoriMain}${product.kategoriSub ? ` / ${product.kategoriSub}` : ''}</td>
+                    <td>${mainCategory}</td>
+                    <td>${subCategory}</td>
                     <td>Rp ${price}</td>
                     <td>${product.views || 0}</td>
                     <td>${date}</td>
