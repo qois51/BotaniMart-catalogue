@@ -1,23 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const productController = require('../controller/product.controller.js');
+const auth = require('../auth/auth.middleware.js');
 
-// Get all products
+// Public
 router.get('/', productController.getAllProducts);
-
-// Get product by ID
 router.get('/:id', productController.getProductById);
+router.post('/:id/views', productController.addProductView);
 
-// Create new product (with image upload)
-router.post('/', productController.createProduct);
-
-// Upload temporary image
-router.post('/upload-temp', productController.uploadTempImage);
-
-router.post("/:id/views", productController.addProductView);
-
-router.put('/:id', productController.updateProduct);
-
-router.delete('/:id', productController.deleteProduct);
+// Admin
+router.post('/upload-temp', auth.requireAuth, auth.requireAdmin, productController.uploadTempImage);
+router.post('/', auth.requireAuth, auth.requireAdmin, productController.createProduct);
+router.put('/:id', auth.requireAuth, auth.requireAdmin, productController.updateProduct);
+router.delete('/:id', auth.requireAuth, auth.requireAdmin, productController.deleteProduct);
 
 module.exports = router;

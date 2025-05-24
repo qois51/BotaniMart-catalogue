@@ -30,7 +30,17 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use('/api/products', productRoutes);
-app.use(express.static(path.join(PATHS.public)));
+app.use('/assets', express.static(path.join(PATHS.public, 'assets')));
+app.use('/uploads', express.static(path.join(PATHS.public, 'uploads')));
+app.use('/views/admin', requireAuth, requireAdmin, (req, res, next) => {
+  const requestedFile = req.path.replace('/views/admin', '');
+  const filePath = path.join(PATHS.public, 'views', 'admin', requestedFile || '/dashboard');
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      res.status(404).send('Not Found');
+    }
+  });
+});
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(PATHS.public, 'views', 'index.html'));
