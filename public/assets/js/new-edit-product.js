@@ -215,6 +215,37 @@ document.addEventListener('DOMContentLoaded', function() {
     
     async function handleFormSubmit(e) {
         e.preventDefault();
+
+          // Validate required fields
+          const productName = document.getElementById('product-name').value.trim();
+          const mainCategory = mainCategorySelect.value.trim();
+          const subCategory = subCategorySelect.value.trim();
+          const price = document.getElementById('price').value.trim();
+    
+          // Validation checks
+          if (!productName) {
+              showNotification('Product name cannot be empty', 'error');
+              document.getElementById('product-name').focus();
+              return;
+          }
+    
+          if (!mainCategory) {
+              showNotification('Main category cannot be empty', 'error');
+              mainCategorySelect.focus();
+              return;
+          }
+
+          if (!subCategory) {
+              showNotification('Sub category cannot be empty', 'error');
+              subCategorySelect.focus();
+              return;
+          }
+    
+          if (!price || isNaN(parseFloat(price)) || parseFloat(price) <= 0) {
+              showNotification('Please enter a valid price', 'error');
+              document.getElementById('price').focus();
+              return;
+          }
     
         // Show loading state
         saveBtn.disabled = true;
