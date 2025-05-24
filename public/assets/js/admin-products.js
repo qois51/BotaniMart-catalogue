@@ -1,4 +1,8 @@
 let viewsChart = null;
+let lastViewsData = {}; // Store the last known view counts
+let pollingInterval = null; // To store the interval ID
+const POLL_INTERVAL = 5000; 
+
 
 // Add this function to create the chart
 function createViewsChart(data, limit = 10) {
@@ -180,6 +184,68 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Function to check for product updates
+    async function checkForUpdates() {
+        try {
+            const response = await fetch('/api/products?nocache=' + Date.now(), {
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                }
+            });
+        
+            if (!response.ok) {
+                throw new Error('Failed to fetch updated products');
+            }
+        
+            const updatedProducts = await response.json();
+            let hasChanges = false;
+        
+            for (const product of updatedProducts) {
+                const productId = product.id;
+                const currentViews = product.views || 0;
+            
+                // If we have past data for this product and views have changed
+                if (lastViewsData[productId] !== undefined && 
+                    lastViewsData[productId] !== currentViews) {
+                    hasChanges = true;
+                    break;
+                }
+            }
+        
+            // If changes detected, update the page
+            if (hasChanges) {
+                console.log("Product view counts changed, refreshing data...");
+            
+                // Update all products
+                allProducts = updatedProducts;
+            
+                // Re-apply current filters
+                filterProducts();
+            
+                // Update the statistics
+                updateStats();
+            
+                // Update the chart if it exists
+                if (document.getElementById('views-chart')) {
+                    createViewsChart(allProducts, document.getElementById('chart-limit')?.value || 10);
+                }
+            
+                // Show notification about the update
+                showNotification('Product data has been updated with latest views', 'info');
+            }
+        
+            // Store the current view counts for next comparison
+            lastViewsData = {};
+            for (const product of updatedProducts) {
+                lastViewsData[product.id] = product.views || 0;
+            }
+        
+        } catch (error) {
+            console.error('Error checking for updates:', error);
+        }
+    }
+
     if (chartLimitSelect) {
         chartLimitSelect.addEventListener('change', function() {
             createViewsChart(allProducts, this.value);
@@ -241,6 +307,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             allProducts = await response.json();
             filteredProducts = [...allProducts];
+
+            lastViewsData = {};
+            allProducts.forEach(product => {
+                lastViewsData[product.id] = product.views || 0;
+            });
             
             updateStats();
             renderProducts();
@@ -248,10 +319,26 @@ document.addEventListener('DOMContentLoaded', function() {
             if (document.getElementById('views-chart')) {
                 createViewsChart(allProducts, document.getElementById('chart-limit')?.value || 10);
             }
+
+            startPolling();
         } catch (error) {
             console.error('Error fetching products:', error);
             productsList.innerHTML = `<tr><td colspan="9" class="error-message">Failed to load products. Please try again later.</td></tr>`;
         }
+    }
+
+    function startPolling() {
+        if (pollingInterval) {
+            clearInterval(pollingInterval);
+        }
+    
+        pollingInterval = setInterval(checkForUpdates, POLL_INTERVAL);
+    
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                checkForUpdates();
+            }
+        });
     }
     
     function updateStats() {
@@ -458,5 +545,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 notification.remove();
             }
         }, 5000);
+    }
+});
+
+// Add this to clean up the interval when user leaves the page
+window.addEventListener('beforeunload', function() {
+    if (pollingInterval) {
+        clearInterval(pollingInterval);
     }
 });
