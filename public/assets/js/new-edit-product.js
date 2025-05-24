@@ -29,13 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let originalProduct = null;
     let mainImageFile = null;
     let thumbImageFiles = [null, null, null];
-    let categoryMapping = {
-        'Indoor': ['Flowering', 'Foliage', 'Succulent', 'Cactus', 'Bonsai'],
-        'Outdoor': ['Flowering', 'Trees', 'Shrubs', 'Climbers', 'Groundcovers'],
-        'Seeds': ['Vegetable', 'Flower', 'Herb', 'Fruit', 'Grass'],
-        'Tools': ['Pruners', 'Shovels', 'Watering', 'Planting', 'Maintenance'],
-        'Accessories': ['Pots', 'Planters', 'Fertilizers', 'Soil', 'Decor']
-    };
     
     // Initialize Jodit Rich Text Editor
     const editor = Jodit.make('#description', {
@@ -103,9 +96,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fetch product data
     fetchProductDetails();
     
-    // Setup category change event
-    mainCategorySelect.addEventListener('change', updateSubCategories);
-    
     // Setup image previews and uploads
     setupImageUploads();
     
@@ -151,17 +141,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('latin-name').value = product.namaLatin || '';
         document.getElementById('price').value = product.hargaProduk || '';
         
-        // Categories
-        if (product.kategoriMain) {
-            mainCategorySelect.value = product.kategoriMain;
-            updateSubCategories();
-            
-            if (product.kategoriSub) {
-                setTimeout(() => {
-                    subCategorySelect.value = product.kategoriSub;
-                }, 100);
-            }
-        }
+        // Categories - UPDATE FOR TEXT INPUTS
+        mainCategorySelect.value = product.kategoriMain || '';
+        subCategorySelect.value = product.kategoriSub || '';
         
         // Description
         if (product.deskripsi) {
@@ -187,23 +169,6 @@ document.addEventListener('DOMContentLoaded', function() {
             imgElement.src = placeholderPath;
             imgElement.dataset.originalSrc = '';
             imgElement.dataset.originalName = '';
-        }
-    }
-    
-    function updateSubCategories() {
-        const mainCategory = mainCategorySelect.value;
-        subCategorySelect.innerHTML = '<option value="">Select Sub-Category</option>';
-        
-        if (mainCategory && categoryMapping[mainCategory]) {
-            categoryMapping[mainCategory].forEach(subCat => {
-                const option = document.createElement('option');
-                option.value = subCat;
-                option.textContent = subCat;
-                subCategorySelect.appendChild(option);
-            });
-            subCategorySelect.disabled = false;
-        } else {
-            subCategorySelect.disabled = true;
         }
     }
     
@@ -265,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('hargaProduk', document.getElementById('price').value);
 
             formData.append('kategoriMain', mainCategorySelect.value);
-            formData.append('kategoriSub', subCategorySelect.value || ''); // Handle empty value
+            formData.append('kategoriSub', subCategorySelect.value);
             formData.append('deskripsi', editor.value);
         
             // Log the form data being sent
