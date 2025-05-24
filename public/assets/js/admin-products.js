@@ -1,3 +1,85 @@
+let viewsChart = null;
+
+// Add this function to create the chart
+function createViewsChart(data, limit = 10) {
+    // Clear any existing chart
+    Plotly.purge('views-chart');
+    
+    // Get the container element
+    const chartElement = document.getElementById('views-chart');
+    
+    // If no data or chart element doesn't exist, return
+    if (!data || !data.length || !chartElement) {
+        return;
+    }
+    
+    // Sort data by views (descending)
+    const sortedData = [...data].sort((a, b) => (b.views || 0) - (a.views || 0));
+    
+    // Limit the data if specified
+    const chartData = limit === 'all' ? sortedData : sortedData.slice(0, parseInt(limit, 10));
+    
+    // Prepare data for chart
+    const productNames = chartData.map(product => {
+        // Truncate long names for better display
+        return product.namaProduk.length > 20 
+            ? product.namaProduk.substring(0, 20) + '...' 
+            : product.namaProduk;
+    });
+    
+    const viewCounts = chartData.map(product => product.views || 0);
+    const colors = chartData.map(product => {
+        const maxViews = sortedData[0].views || 1; 
+        const intensity = Math.min(1, 0.3 + ((product.views || 0) / (maxViews * 1.5)));
+        return `rgba(46, 125, 50, ${intensity})`;
+    });
+    
+    // Create bar chart trace
+    const trace = {
+        x: productNames,
+        y: viewCounts,
+        type: 'bar',
+        marker: {
+            color: colors
+        },
+        hovertemplate: '<b>%{x}</b><br>Views: %{y}<extra></extra>'
+    };
+    
+    // Layout configuration
+    const layout = {
+        title: `Top ${limit === 'all' ? 'All' : limit} Products by Views`,
+        xaxis: {
+            title: 'Product',
+            tickangle: -45
+        },
+        yaxis: {
+            title: 'Number of Views'
+        },
+        margin: {
+            l: 50,
+            r: 20,
+            b: 100,
+            t: 50,
+            pad: 4
+        },
+        bargap: 0.2,
+        font: {
+            family: 'Arial, sans-serif'
+        }
+    };
+    
+    // Config for responsiveness and toolbar
+    const config = {
+        responsive: true,
+        displayModeBar: false,
+        displaylogo: false,
+        modeBarButtonsToRemove: ['lasso2d', 'select2d']
+    };
+    
+    // Create the chart
+    Plotly.newPlot('views-chart', [trace], layout, config);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize tooltips    
     const profileIcon = document.getElementById('profileIcon');
@@ -14,7 +96,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (response.ok) {
                 const data = await response.json();
-                console.log('Admin data:', data.username);
                 adminNameElement.textContent = data.username;
             } else {
                 console.log('Not authenticated or failed to fetch user data');
@@ -80,7 +161,31 @@ document.addEventListener('DOMContentLoaded', function() {
     let totalPages = 1;
     let itemsPerPage = 10;
     let currentProductIdToDelete = null;
+
+
+    // Add these new references for chart controls
+    const toggleChartBtn = document.getElementById('toggle-chart-btn');
+    const chartLimitSelect = document.getElementById('chart-limit');
+    const viewsChartElement = document.getElementById('views-chart');
     
+    if (toggleChartBtn) {
+        toggleChartBtn.addEventListener('click', function() {
+            if (viewsChartElement.style.display === 'none') {
+                viewsChartElement.style.display = 'block';
+                toggleChartBtn.innerHTML = '<i class="fas fa-chart-bar"></i> Hide Chart';
+            } else {
+                viewsChartElement.style.display = 'none';
+                toggleChartBtn.innerHTML = '<i class="fas fa-chart-bar"></i> Show Chart';
+            }
+        });
+    }
+    
+    if (chartLimitSelect) {
+        chartLimitSelect.addEventListener('change', function() {
+            createViewsChart(allProducts, this.value);
+        });
+    }
+
     // Products state
     let allProducts = [];
     let filteredProducts = [];
@@ -139,6 +244,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             updateStats();
             renderProducts();
+
+            if (document.getElementById('views-chart')) {
+                createViewsChart(allProducts, document.getElementById('chart-limit')?.value || 10);
+            }
         } catch (error) {
             console.error('Error fetching products:', error);
             productsList.innerHTML = `<tr><td colspan="9" class="error-message">Failed to load products. Please try again later.</td></tr>`;
