@@ -316,6 +316,11 @@ document.addEventListener('DOMContentLoaded', function() {
             updateStats();
             renderProducts();
 
+            const categoriesMain = [...new Set(allProducts.map(product => product.kategoriMain))];
+            const categoriesSub = [...new Set(allProducts.map(product => product.kategoriSub).filter(Boolean))];
+
+            renderCategories(categoriesMain, categoriesSub);
+
             if (document.getElementById('views-chart')) {
                 createViewsChart(allProducts, document.getElementById('chart-limit')?.value || 10);
             }
@@ -325,6 +330,100 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error fetching products:', error);
             productsList.innerHTML = `<tr><td colspan="9" class="error-message">Failed to load products. Please try again later.</td></tr>`;
         }
+    }
+
+    async function getCategory() {
+      try {
+        const response = await fetch('/api/products');
+        if (!response.ok) {
+          throw new Error('Failed to fetch categories');
+        }
+        const temp = await response.json();
+        const categoriesMain = [...new Set(temp.map(product => product.kategoriMain))];
+        const categoriesSub = [...new Set(temp.map(product => product.kategoriSub).filter(Boolean))];
+
+        renderCategories(categoriesMain, categoriesSub);
+
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    }
+
+    // Add this function to render the categories to the dropdown
+    function renderCategories(mainCategories, subCategories) {
+      const categoryFilter = document.getElementById('category-filter');
+  
+      // Keep the "All Categories" option
+      categoryFilter.innerHTML = '<option value="">All Categories</option>';
+  
+      // Sort categories alphabetically
+      mainCategories.sort();
+
+      const subCategoryMap = {};  
+
+      // Initialize the map
+      mainCategories.forEach(main => {
+          if (main) subCategoryMap[main] = [];
+      });
+
+      // Map products to get subcategories grouped by main category
+      allProducts.forEach(product => {
+          if (product.kategoriMain && product.kategoriSub) {
+              if (!subCategoryMap[product.kategoriMain]) {
+                  subCategoryMap[product.kategoriMain] = [];
+              }
+            
+              if (!subCategoryMap[product.kategoriMain].includes(product.kategoriSub)) {
+                  subCategoryMap[product.kategoriMain].push(product.kategoriSub);
+              }
+          }
+      });
+
+      mainCategories.forEach(category => {
+          if (category) {
+              const mainOption = document.createElement('option');
+              mainOption.value = category;
+              mainOption.textContent = category;
+              mainOption.className = 'main-category-option';
+              categoryFilter.appendChild(mainOption);
+            
+              if (subCategoryMap[category] && subCategoryMap[category].length > 0) {
+                  subCategoryMap[category].sort().forEach(subCat => {
+                      const subOption = document.createElement('option');
+                      subOption.value = `sub:${subCat}`;
+                      subOption.textContent = `↳ ${subCat}`;
+                      subOption.style.paddingLeft = '15px';
+                      subOption.className = 'sub-category-option';
+                      categoryFilter.appendChild(subOption);
+                  });
+              }
+          }
+      });
+    
+      const orphanedSubs = subCategories.filter(sub => {
+          for (const main in subCategoryMap) {
+              if (subCategoryMap[main].includes(sub)) {
+                  return false;
+              }
+          }
+          return true;
+      });
+    
+      if (orphanedSubs.length > 0) {
+          const divider = document.createElement('option');
+          divider.disabled = true;
+          divider.textContent = '── Other Subcategories ──';
+          categoryFilter.appendChild(divider);
+        
+          orphanedSubs.sort().forEach(subCat => {
+              const option = document.createElement('option');
+              option.value = `sub:${subCat}`;
+              option.textContent = `↳ ${subCat}`;
+              option.style.paddingLeft = '15px';
+              categoryFilter.appendChild(option);
+          });
+      }
+
     }
 
     function startPolling() {
@@ -378,9 +477,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 product.namaProduk.toLowerCase().includes(searchTerm) || 
                 (product.namaLatin && product.namaLatin.toLowerCase().includes(searchTerm));
             
-            const matchesCategory = !category || 
-                product.kategoriMain === category;
-            
+            // Enhanced category matching to support subcategories
+            let matchesCategory = !category; // true if no category selected
+
+            if (category) {
+              if (category.startsWith('sub:')) {
+                // This is a subcategory filter
+                const subCat = category.replace('sub:', '');
+                matchesCategory = product.kategoriSub === subCat;
+              } else {
+                // This is a main category filter
+                matchesCategory = product.kategoriMain === category;
+              }
+            }
+          
             return matchesSearch && matchesCategory;
         });
         
@@ -434,6 +544,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const image = product.gambarUtama ? 
                 `/uploads/products/${product.gambarUtama}` : 
                 '/uploads/placeholder.jpeg';
+            const mainCategory = product.kategoriMain || '-';
+            const subCategory = product.kategoriSub || '-';
                 
             return `
                 <tr>
