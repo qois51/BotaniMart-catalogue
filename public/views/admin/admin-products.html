@@ -6,6 +6,7 @@
     <title>Product Management - BotaniMart Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/admin-products.css">
+    <script src="https://cdn.plot.ly/plotly-2.28.0.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -34,6 +35,20 @@
             <div class="stat-card">
                 <h3>Latest Addition</h3>
                 <p id="latest-addition">-</p>
+            </div>
+        </div>
+
+        <div class="visualization-section">
+            <h2>Product Views Analytics</h2>
+            <div id="views-chart"></div>
+            <div class="chart-controls">
+                <button id="toggle-chart-btn" class="btn"><i class="fas fa-chart-bar"></i> Show/Hide Chart</button>
+                <select id="chart-limit">
+                    <option value="5">Top 5 Products</option>
+                    <option value="10" selected>Top 10 Products</option>
+                    <option value="20">Top 20 Products</option>
+                    <option value="all">All Products</option>
+                </select>
             </div>
         </div>
 
@@ -75,7 +90,8 @@
                         <th>ID</th>
                         <th>Image</th>
                         <th>Name</th>
-                        <th>Category</th>
+                        <th>Main Category</th>
+                        <th>Sub Category</th>
                         <th>Price</th>
                         <th>Views</th>
                         <th>Date Added</th>

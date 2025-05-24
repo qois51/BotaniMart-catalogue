@@ -1,3 +1,89 @@
+let viewsChart = null;
+let lastViewsData = {}; // Store the last known view counts
+let pollingInterval = null; // To store the interval ID
+const POLL_INTERVAL = 5000; 
+
+
+// Add this function to create the chart
+function createViewsChart(data, limit = 10) {
+    // Clear any existing chart
+    Plotly.purge('views-chart');
+    
+    // Get the container element
+    const chartElement = document.getElementById('views-chart');
+    
+    // If no data or chart element doesn't exist, return
+    if (!data || !data.length || !chartElement) {
+        return;
+    }
+    
+    // Sort data by views (descending)
+    const sortedData = [...data].sort((a, b) => (b.views || 0) - (a.views || 0));
+    
+    // Limit the data if specified
+    const chartData = limit === 'all' ? sortedData : sortedData.slice(0, parseInt(limit, 10));
+    
+    // Prepare data for chart
+    const productNames = chartData.map(product => {
+        // Truncate long names for better display
+        return product.namaProduk.length > 20 
+            ? product.namaProduk.substring(0, 20) + '...' 
+            : product.namaProduk;
+    });
+    
+    const viewCounts = chartData.map(product => product.views || 0);
+    const colors = chartData.map(product => {
+        const maxViews = sortedData[0].views || 1; 
+        const intensity = Math.min(1, 0.3 + ((product.views || 0) / (maxViews * 1.5)));
+        return `rgba(46, 125, 50, ${intensity})`;
+    });
+    
+    // Create bar chart trace
+    const trace = {
+        x: productNames,
+        y: viewCounts,
+        type: 'bar',
+        marker: {
+            color: colors
+        },
+        hovertemplate: '<b>%{x}</b><br>Views: %{y}<extra></extra>'
+    };
+    
+    // Layout configuration
+    const layout = {
+        title: `Top ${limit === 'all' ? 'All' : limit} Products by Views`,
+        xaxis: {
+            title: 'Product',
+            tickangle: -45
+        },
+        yaxis: {
+            title: 'Number of Views'
+        },
+        margin: {
+            l: 50,
+            r: 20,
+            b: 100,
+            t: 50,
+            pad: 4
+        },
+        bargap: 0.2,
+        font: {
+            family: 'Arial, sans-serif'
+        }
+    };
+    
+    // Config for responsiveness and toolbar
+    const config = {
+        responsive: true,
+        displayModeBar: false,
+        displaylogo: false,
+        modeBarButtonsToRemove: ['lasso2d', 'select2d']
+    };
+    
+    // Create the chart
+    Plotly.newPlot('views-chart', [trace], layout, config);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize tooltips    
     const profileIcon = document.getElementById('profileIcon');
@@ -14,7 +100,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (response.ok) {
                 const data = await response.json();
-                console.log('Admin data:', data.username);
                 adminNameElement.textContent = data.username;
             } else {
                 console.log('Not authenticated or failed to fetch user data');
@@ -80,7 +165,93 @@ document.addEventListener('DOMContentLoaded', function() {
     let totalPages = 1;
     let itemsPerPage = 10;
     let currentProductIdToDelete = null;
+
+
+    // Add these new references for chart controls
+    const toggleChartBtn = document.getElementById('toggle-chart-btn');
+    const chartLimitSelect = document.getElementById('chart-limit');
+    const viewsChartElement = document.getElementById('views-chart');
     
+    if (toggleChartBtn) {
+        toggleChartBtn.addEventListener('click', function() {
+            if (viewsChartElement.style.display === 'none') {
+                viewsChartElement.style.display = 'block';
+                toggleChartBtn.innerHTML = '<i class="fas fa-chart-bar"></i> Hide Chart';
+            } else {
+                viewsChartElement.style.display = 'none';
+                toggleChartBtn.innerHTML = '<i class="fas fa-chart-bar"></i> Show Chart';
+            }
+        });
+    }
+    
+    // Function to check for product updates
+    async function checkForUpdates() {
+        try {
+            const response = await fetch('/api/products?nocache=' + Date.now(), {
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                }
+            });
+        
+            if (!response.ok) {
+                throw new Error('Failed to fetch updated products');
+            }
+        
+            const updatedProducts = await response.json();
+            let hasChanges = false;
+        
+            for (const product of updatedProducts) {
+                const productId = product.id;
+                const currentViews = product.views || 0;
+            
+                // If we have past data for this product and views have changed
+                if (lastViewsData[productId] !== undefined && 
+                    lastViewsData[productId] !== currentViews) {
+                    hasChanges = true;
+                    break;
+                }
+            }
+        
+            // If changes detected, update the page
+            if (hasChanges) {
+                console.log("Product view counts changed, refreshing data...");
+            
+                // Update all products
+                allProducts = updatedProducts;
+            
+                // Re-apply current filters
+                filterProducts();
+            
+                // Update the statistics
+                updateStats();
+            
+                // Update the chart if it exists
+                if (document.getElementById('views-chart')) {
+                    createViewsChart(allProducts, document.getElementById('chart-limit')?.value || 10);
+                }
+            
+                // Show notification about the update
+                showNotification('Product data has been updated with latest views', 'info');
+            }
+        
+            // Store the current view counts for next comparison
+            lastViewsData = {};
+            for (const product of updatedProducts) {
+                lastViewsData[product.id] = product.views || 0;
+            }
+        
+        } catch (error) {
+            console.error('Error checking for updates:', error);
+        }
+    }
+
+    if (chartLimitSelect) {
+        chartLimitSelect.addEventListener('change', function() {
+            createViewsChart(allProducts, this.value);
+        });
+    }
+
     // Products state
     let allProducts = [];
     let filteredProducts = [];
@@ -136,13 +307,137 @@ document.addEventListener('DOMContentLoaded', function() {
             
             allProducts = await response.json();
             filteredProducts = [...allProducts];
+
+            lastViewsData = {};
+            allProducts.forEach(product => {
+                lastViewsData[product.id] = product.views || 0;
+            });
             
             updateStats();
             renderProducts();
+
+            const categoriesMain = [...new Set(allProducts.map(product => product.kategoriMain))];
+            const categoriesSub = [...new Set(allProducts.map(product => product.kategoriSub).filter(Boolean))];
+
+            renderCategories(categoriesMain, categoriesSub);
+
+            if (document.getElementById('views-chart')) {
+                createViewsChart(allProducts, document.getElementById('chart-limit')?.value || 10);
+            }
+
+            startPolling();
         } catch (error) {
             console.error('Error fetching products:', error);
             productsList.innerHTML = `<tr><td colspan="9" class="error-message">Failed to load products. Please try again later.</td></tr>`;
         }
+    }
+
+    async function getCategory() {
+      try {
+        const response = await fetch('/api/products');
+        if (!response.ok) {
+          throw new Error('Failed to fetch categories');
+        }
+        const temp = await response.json();
+        const categoriesMain = [...new Set(temp.map(product => product.kategoriMain))];
+        const categoriesSub = [...new Set(temp.map(product => product.kategoriSub).filter(Boolean))];
+
+        renderCategories(categoriesMain, categoriesSub);
+
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    }
+
+    // Add this function to render the categories to the dropdown
+    function renderCategories(mainCategories, subCategories) {
+      const categoryFilter = document.getElementById('category-filter');
+  
+      // Keep the "All Categories" option
+      categoryFilter.innerHTML = '<option value="">All Categories</option>';
+  
+      // Sort categories alphabetically
+      mainCategories.sort();
+
+      const subCategoryMap = {};  
+
+      // Initialize the map
+      mainCategories.forEach(main => {
+          if (main) subCategoryMap[main] = [];
+      });
+
+      // Map products to get subcategories grouped by main category
+      allProducts.forEach(product => {
+          if (product.kategoriMain && product.kategoriSub) {
+              if (!subCategoryMap[product.kategoriMain]) {
+                  subCategoryMap[product.kategoriMain] = [];
+              }
+            
+              if (!subCategoryMap[product.kategoriMain].includes(product.kategoriSub)) {
+                  subCategoryMap[product.kategoriMain].push(product.kategoriSub);
+              }
+          }
+      });
+
+      mainCategories.forEach(category => {
+          if (category) {
+              const mainOption = document.createElement('option');
+              mainOption.value = category;
+              mainOption.textContent = category;
+              mainOption.className = 'main-category-option';
+              categoryFilter.appendChild(mainOption);
+            
+              if (subCategoryMap[category] && subCategoryMap[category].length > 0) {
+                  subCategoryMap[category].sort().forEach(subCat => {
+                      const subOption = document.createElement('option');
+                      subOption.value = `sub:${subCat}`;
+                      subOption.textContent = `↳ ${subCat}`;
+                      subOption.style.paddingLeft = '15px';
+                      subOption.className = 'sub-category-option';
+                      categoryFilter.appendChild(subOption);
+                  });
+              }
+          }
+      });
+    
+      const orphanedSubs = subCategories.filter(sub => {
+          for (const main in subCategoryMap) {
+              if (subCategoryMap[main].includes(sub)) {
+                  return false;
+              }
+          }
+          return true;
+      });
+    
+      if (orphanedSubs.length > 0) {
+          const divider = document.createElement('option');
+          divider.disabled = true;
+          divider.textContent = '── Other Subcategories ──';
+          categoryFilter.appendChild(divider);
+        
+          orphanedSubs.sort().forEach(subCat => {
+              const option = document.createElement('option');
+              option.value = `sub:${subCat}`;
+              option.textContent = `↳ ${subCat}`;
+              option.style.paddingLeft = '15px';
+              categoryFilter.appendChild(option);
+          });
+      }
+
+    }
+
+    function startPolling() {
+        if (pollingInterval) {
+            clearInterval(pollingInterval);
+        }
+    
+        pollingInterval = setInterval(checkForUpdates, POLL_INTERVAL);
+    
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                checkForUpdates();
+            }
+        });
     }
     
     function updateStats() {
@@ -182,9 +477,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 product.namaProduk.toLowerCase().includes(searchTerm) || 
                 (product.namaLatin && product.namaLatin.toLowerCase().includes(searchTerm));
             
-            const matchesCategory = !category || 
-                product.kategoriMain === category;
-            
+            // Enhanced category matching to support subcategories
+            let matchesCategory = !category; // true if no category selected
+
+            if (category) {
+              if (category.startsWith('sub:')) {
+                // This is a subcategory filter
+                const subCat = category.replace('sub:', '');
+                matchesCategory = product.kategoriSub === subCat;
+              } else {
+                // This is a main category filter
+                matchesCategory = product.kategoriMain === category;
+              }
+            }
+          
             return matchesSearch && matchesCategory;
         });
         
@@ -238,6 +544,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const image = product.gambarUtama ? 
                 `/uploads/products/${product.gambarUtama}` : 
                 '/uploads/placeholder.jpeg';
+            const mainCategory = product.kategoriMain || '-';
+            const subCategory = product.kategoriSub || '-';
                 
             return `
                 <tr>
@@ -247,7 +555,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div>${product.namaProduk}</div>
                         <small class="latin-name">${product.namaLatin || ''}</small>
                     </td>
-                    <td>${product.kategoriMain}${product.kategoriSub ? ` / ${product.kategoriSub}` : ''}</td>
+                    <td>${mainCategory}</td>
+                    <td>${subCategory}</td>
                     <td>Rp ${price}</td>
                     <td>${product.views || 0}</td>
                     <td>${date}</td>
@@ -349,5 +658,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 notification.remove();
             }
         }, 5000);
+    }
+});
+
+// Add this to clean up the interval when user leaves the page
+window.addEventListener('beforeunload', function() {
+    if (pollingInterval) {
+        clearInterval(pollingInterval);
     }
 });

@@ -29,13 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let originalProduct = null;
     let mainImageFile = null;
     let thumbImageFiles = [null, null, null];
-    let categoryMapping = {
-        'Indoor': ['Flowering', 'Foliage', 'Succulent', 'Cactus', 'Bonsai'],
-        'Outdoor': ['Flowering', 'Trees', 'Shrubs', 'Climbers', 'Groundcovers'],
-        'Seeds': ['Vegetable', 'Flower', 'Herb', 'Fruit', 'Grass'],
-        'Tools': ['Pruners', 'Shovels', 'Watering', 'Planting', 'Maintenance'],
-        'Accessories': ['Pots', 'Planters', 'Fertilizers', 'Soil', 'Decor']
-    };
     
     // Initialize Jodit Rich Text Editor
     const editor = Jodit.make('#description', {
@@ -103,9 +96,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fetch product data
     fetchProductDetails();
     
-    // Setup category change event
-    mainCategorySelect.addEventListener('change', updateSubCategories);
-    
     // Setup image previews and uploads
     setupImageUploads();
     
@@ -151,17 +141,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('latin-name').value = product.namaLatin || '';
         document.getElementById('price').value = product.hargaProduk || '';
         
-        // Categories
-        if (product.kategoriMain) {
-            mainCategorySelect.value = product.kategoriMain;
-            updateSubCategories();
-            
-            if (product.kategoriSub) {
-                setTimeout(() => {
-                    subCategorySelect.value = product.kategoriSub;
-                }, 100);
-            }
-        }
+        // Categories - UPDATE FOR TEXT INPUTS
+        mainCategorySelect.value = product.kategoriMain || '';
+        subCategorySelect.value = product.kategoriSub || '';
         
         // Description
         if (product.deskripsi) {
@@ -187,23 +169,6 @@ document.addEventListener('DOMContentLoaded', function() {
             imgElement.src = placeholderPath;
             imgElement.dataset.originalSrc = '';
             imgElement.dataset.originalName = '';
-        }
-    }
-    
-    function updateSubCategories() {
-        const mainCategory = mainCategorySelect.value;
-        subCategorySelect.innerHTML = '<option value="">Select Sub-Category</option>';
-        
-        if (mainCategory && categoryMapping[mainCategory]) {
-            categoryMapping[mainCategory].forEach(subCat => {
-                const option = document.createElement('option');
-                option.value = subCat;
-                option.textContent = subCat;
-                subCategorySelect.appendChild(option);
-            });
-            subCategorySelect.disabled = false;
-        } else {
-            subCategorySelect.disabled = true;
         }
     }
     
@@ -250,6 +215,37 @@ document.addEventListener('DOMContentLoaded', function() {
     
     async function handleFormSubmit(e) {
         e.preventDefault();
+
+          // Validate required fields
+          const productName = document.getElementById('product-name').value.trim();
+          const mainCategory = mainCategorySelect.value.trim();
+          const subCategory = subCategorySelect.value.trim();
+          const price = document.getElementById('price').value.trim();
+    
+          // Validation checks
+          if (!productName) {
+              showNotification('Product name cannot be empty', 'error');
+              document.getElementById('product-name').focus();
+              return;
+          }
+    
+          if (!mainCategory) {
+              showNotification('Main category cannot be empty', 'error');
+              mainCategorySelect.focus();
+              return;
+          }
+
+          if (!subCategory) {
+              showNotification('Sub category cannot be empty', 'error');
+              subCategorySelect.focus();
+              return;
+          }
+    
+          if (!price || isNaN(parseFloat(price)) || parseFloat(price) <= 0) {
+              showNotification('Please enter a valid price', 'error');
+              document.getElementById('price').focus();
+              return;
+          }
     
         // Show loading state
         saveBtn.disabled = true;
@@ -265,7 +261,7 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('hargaProduk', document.getElementById('price').value);
 
             formData.append('kategoriMain', mainCategorySelect.value);
-            formData.append('kategoriSub', subCategorySelect.value || ''); // Handle empty value
+            formData.append('kategoriSub', subCategorySelect.value);
             formData.append('deskripsi', editor.value);
         
             // Log the form data being sent
