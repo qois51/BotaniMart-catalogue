@@ -29,10 +29,12 @@ app.use(connectLivereload());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use('/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/assets', express.static(path.join(PATHS.public, 'assets')));
 app.use('/uploads', express.static(path.join(PATHS.public, 'uploads')));
-app.use('/views/admin', requireAuth, requireAdmin, (req, res, next) => {
+app.use('/views', express.static(path.join(PATHS.public, 'views')));
+app.use('/views/admin', requireAuth, requireAdmin, (req, res) => {
   const requestedFile = req.path.replace('/views/admin', '');
   const filePath = path.join(PATHS.public, 'views', 'admin', requestedFile || '/dashboard');
   res.sendFile(filePath, (err) => {
@@ -70,8 +72,6 @@ app.get('/admin-products', requireAuth, requireAdmin, async (req, res) => {
 app.get('/edit-product', requireAuth, requireAdmin, (req, res) => {
   res.sendFile(path.join(PATHS.admin, 'new-edit-product.html'));
 });
-
-app.use('/auth', authRoutes);
 
 // Notify browser on changes
 liveReloadServer.server.once('connection', () => {

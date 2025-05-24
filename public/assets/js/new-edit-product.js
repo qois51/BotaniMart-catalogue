@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!productId) {
         showNotification('Product ID is missing. Redirecting to products list...', 'error');
         setTimeout(() => {
-            window.location.href = '/views/admin/admin-products.html';
+            window.location.href = '/dashboard';
         }, 3000);
         return;
     }
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Cancel button handler
     cancelBtn.addEventListener('click', function() {
         if (confirm('Are you sure you want to cancel? All changes will be lost.')) {
-            window.location.href = '/views/admin/admin-products.html';
+            window.location.href = '/dashboard';
         }
     });
     
