@@ -53,6 +53,9 @@ h1 {
     display: inline-flex;
     align-items: center;
     gap: 5px;
+    margin: 10px;
+    max-width: 200px;
+    font-size: 15px;
 }
 
 .btn:hover {
@@ -156,21 +159,23 @@ select {
 .product-list-container {
     background-color: white;
     border-radius: var(--border-radius);
-    overflow: hidden;
+    overflow-x: auto; /* agar tabel bisa scroll horizontal jika perlu */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 #products-table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed;
+    table-layout: auto; /* ubah dari fixed ke auto agar kolom lebar bisa menyesuaikan */
+    min-width: 1000px; /* beri batas minimum agar tombol tidak terhimpit di layar kecil */
 }
 
 #products-table th, 
 #products-table td {
     padding: 12px 15px;
-    text-align: left;
+    text-align: center;
     border-bottom: 1px solid var(--gray-light);
+    white-space: nowrap; /* mencegah teks pecah baris, penting untuk kolom aksi */
 }
 
 #products-table th {
@@ -179,6 +184,7 @@ select {
     color: #555;
     position: sticky;
     top: 0;
+    z-index: 1;
 }
 
 #products-table tr:hover {
@@ -192,9 +198,21 @@ select {
     border-radius: var(--border-radius);
 }
 
+/* Tambahan khusus agar kolom aksi (edit/delete) tidak kepotong */
+#products-table th:last-child,
+#products-table td:last-child {
+    min-width: 150px;
+}
+
 .action-btns {
     display: flex;
     gap: 5px;
+}
+
+.action-btns button,
+.action-btns a {
+    white-space: nowrap;
+    overflow: visible;
 }
 
 .action-btns a, .action-btns button {
@@ -314,6 +332,7 @@ select {
     display: flex;
     align-items: center;
     padding: 8px;
+    gap: 7px;
 }
 
 .profile-icon i {

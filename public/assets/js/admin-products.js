@@ -54,7 +54,7 @@ function createViewsChart(data, limit = 10) {
         title: `Top ${limit === 'all' ? 'All' : limit} Products by Views`,
         xaxis: {
             title: 'Product',
-            tickangle: -45
+            tickangle: 0
         },
         yaxis: {
             title: 'Number of Views'
@@ -635,30 +635,38 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
         // Notification function
-    function showNotification(message, type = 'info') {
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.innerHTML = `
-            <span>${message}</span>
-            <button class="close-notification">&times;</button>
-        `;
-        
-        // Add to DOM
-        document.body.appendChild(notification);
-        
-        // Add event listener to close button
-        notification.querySelector('.close-notification').addEventListener('click', function() {
-            notification.remove();
-        });
-        
-        // Auto-remove after 5 seconds
-        setTimeout(() => {
-            if (document.body.contains(notification)) {
-                notification.remove();
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+
+            // Conditionally add close button
+            if (type === 'success') {
+                notification.innerHTML = `<span>${message}</span>`;
+            } else {
+                notification.innerHTML = `
+                    <span>${message}</span>
+                    <button class="close-notification">&times;</button>
+                `;
             }
-        }, 5000);
-    }
+
+            // Add to DOM
+            document.body.appendChild(notification);
+
+            // Add event listener to close button if not success
+            if (type !== 'success') {
+                notification.querySelector('.close-notification').addEventListener('click', function () {
+                    notification.remove();
+                });
+            }
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
 });
 
 // Add this to clean up the interval when user leaves the page
