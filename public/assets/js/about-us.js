@@ -32,6 +32,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Tombol Catalog
     document.getElementById('catalogBtn').addEventListener('click', function() {
-        window.location.href = 'katalog.html';
+        window.location.href = 'catalog';
     });
 });

@@ -4,6 +4,7 @@ const PATHS = require('./config/paths');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet'); // security
 const { requireAuth, requireAdmin } = require(path.join(PATHS.server, 'auth', 'auth.middleware.js'));
 const authRoutes = require(path.join(PATHS.server, 'auth', 'auth.routes.js'));
 const productRoutes = require(path.join(PATHS.server, 'routes', 'product.routes.js'));
@@ -13,12 +14,12 @@ cleanupTempFiles(0);
 
 const livereload = require('livereload');
 const connectLivereload = require('connect-livereload');
-const { queryProducts } = require(path.join(PATHS.server, 'logic', 'queryProduct.js'));
-const db = require(PATHS.db);
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Increase limit
+app.use(helmet());
+app.use(cookieParser());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
@@ -26,54 +27,50 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 const liveReloadServer = livereload.createServer();
 liveReloadServer.watch(PATHS.public);
 app.use(connectLivereload());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use('/auth', authRoutes);
-app.use('/api/products', productRoutes);
+
 app.use('/assets', express.static(path.join(PATHS.public, 'assets')));
 app.use('/uploads', express.static(path.join(PATHS.public, 'uploads')));
-app.use('/views', express.static(path.join(PATHS.public, 'views')));
-app.use('/views/admin', requireAuth, requireAdmin, (req, res) => {
-  const requestedFile = req.path.replace('/views/admin', '');
-  const filePath = path.join(PATHS.public, 'views', 'admin', requestedFile || '/dashboard');
+
+app.get('/', (req, res) => {
+  res.redirect('/about-us');
+});
+
+// Rute Publik
+app.get('/:page', (req, res, next) => {
+  let page = req.params.page;
+  if (page.endsWith('.html')) {
+    const cleanPage = page.slice(0, -5);
+    return res.redirect(301, '/' + cleanPage);
+  }
+  const filePath = path.join(PATHS.views, `${page}.html`);
   res.sendFile(filePath, (err) => {
     if (err) {
-      res.status(404).send('Not Found');
+      next();
     }
   });
 });
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(PATHS.public, 'views', 'index.html'));
+app.use('/auth', authRoutes);
+app.use('/api/products', productRoutes);
+
+// Rute Admin
+app.get('/admin/:page', requireAuth, requireAdmin, (req, res, next) => {
+  let page = req.params.page;
+  if (page.endsWith('.html')) {
+    const cleanPage = page.slice(0, -5);
+    return res.redirect(301, `/admin/${cleanPage}`);
+  }
+  const filePath = path.join(PATHS.admin, `${page}.html`);
+  res.sendFile(filePath, (err) => {
+    if (err) next();
+  });
 });
 
-app.get('/admin', (req, res) => {
-  console.log('Serving login.html');
-  res.sendFile(path.join(PATHS.public, 'views', 'login-admin.html'));
+app.use((req, res) => {
+  res.status(404).send('Page Not Found');
 });
 
-app.get('/newadmin', (req, res) => {
-  console.log('Serving login.html');
-  res.sendFile(path.join(PATHS.public, 'views', 'new-admin.html'));
-});
-
-app.get('/dashboard', requireAuth, (req, res) => {
-  res.sendFile(path.join(PATHS.admin, 'admin-products.html'));
-});
-
-app.get('/add-product', requireAuth, requireAdmin, (req, res) => {
-  res.sendFile(path.join(PATHS.admin, 'addProduct.html'));
-});
-
-app.get('/admin-products', requireAuth, requireAdmin, async (req, res) => {
-  res.sendFile(path.join(PATHS.admin, 'admin-products.html'));
-});
-app.get('/edit-product', requireAuth, requireAdmin, (req, res) => {
-  res.sendFile(path.join(PATHS.admin, 'new-edit-product.html'));
-});
-
-// Notify browser on changes
+// Livereload notification
 liveReloadServer.server.once('connection', () => {
   setTimeout(() => {
     liveReloadServer.refresh('/');

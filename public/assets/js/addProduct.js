@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Produk berhasil ditambahkan!');
             
             // Redirect to dashboard or product list
-            window.location.href = '/dashboard';
+            window.location.href = '/admin/admin-products';
             
         } catch (error) {
             console.error('Error submitting product:', error);

@@ -28,14 +28,14 @@
           </span>
         </div>
         <div class="forgot">
-          <a href="/views/reset.html">Forgot password?</a>
+          <a href="/reset">Forgot password?</a>
         </div>
         <div class="login_footer">
           <button type="submit">Sign In</button>
         </div>
       </form>
       <div class="signup-link">
-        Don't have an account? <a href="/views/new-admin.html">Sign up</a>
+        Don't have an account? <a href="/admin/new-admin">Sign up</a>
       </div>
     </div>
   </div>
@@ -70,7 +70,7 @@
     });
     const data = await res.json();
     if (res.ok) {
-      window.location.href = '/dashboard';
+      window.location.href = '/admin/admin-products';
     } else {
       alert(data.error || 'Login gagal');
     }

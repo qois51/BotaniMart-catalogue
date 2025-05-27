@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
           // Update default path as well
           const imageUrl = product.gambarUtama ? basePath + product.gambarUtama : '../uploads/placeholder.jpeg';
           return `
-              <a href="views/product-details.html?id=${product.id}" class="produk-link">
+              <a href="product-details?id=${product.id}" class="produk-link">
                   <div class="produk">
                       <img src="${imageUrl}" alt="${product.namaProduk}">
                       <p>${product.namaProduk}</p>
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Tambahkan event listener untuk redirect ke halaman detail
       item.addEventListener('click', () => {
-        window.location.href = `views/product-details.html?id=${product.id}`;
+        window.location.href = `product-details?id=${product.id}`;
       });
 
       historyDropdown.appendChild(item);

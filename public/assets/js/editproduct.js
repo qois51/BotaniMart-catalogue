@@ -258,7 +258,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       alert('Produk berhasil diperbarui!');
-      window.location.href = '/dashboard';
+      window.location.href = '/admin/admin-products';
 
     } catch (error) {
       alert(`Error: ${error.message}`);
@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       alert('Produk berhasil dihapus!');
-      window.location.href = '/dashboard';
+      window.location.href = '/admin/admin-products';
 
     } catch (error) {
       alert(`Error: ${error.message}`);

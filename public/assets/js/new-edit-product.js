@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!productId) {
         showNotification('Product ID is missing. Redirecting to products list...', 'error');
         setTimeout(() => {
-            window.location.href = '/dashboard';
+            window.location.href = '/admin/admin-products';
         }, 3000);
         return;
     }
@@ -76,20 +76,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Setup profile dropdown toggle
     if (profileIcon && profileDropdown) {
+        // Toggle dropdown on profile icon click
         profileIcon.addEventListener('click', function(e) {
             e.stopPropagation();
             profileDropdown.classList.toggle('show');
         });
         
+        // Prevent clicks inside dropdown from closing it
+        profileDropdown.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+        
+        // Close dropdown when clicking elsewhere on the page
         document.addEventListener('click', function() {
             profileDropdown.classList.remove('show');
         });
         
+        // Handle logout button
         const logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) {
-            logoutBtn.addEventListener('click', function() {
-                window.location.href = '/logout';
-            });
+          logoutBtn.addEventListener('click', () => {
+            fetch('/auth/logout', { credentials: 'include' })
+              .finally(() => {
+                window.location.href = '/admin';
+              });
+          });
         }
     }
     
@@ -105,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Cancel button handler
     cancelBtn.addEventListener('click', function() {
         if (confirm('Are you sure you want to cancel? All changes will be lost.')) {
-            window.location.href = '/dashboard';
+            window.location.href = '/admin/admin-products';
         }
     });
     
@@ -331,7 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
             // Redirect back to products list after a short delay
             setTimeout(() => {
-                window.location.href = '/admin-products';
+                window.location.href = '/admin/admin-products';
             }, 2000);
         
         } catch (error) {

@@ -156,7 +156,7 @@ exports.createProduct = async (req, res) => {
       res.status(201).json({ 
         message: 'Produk berhasil ditambahkan', 
         product: newProduct,
-        redirect: '/views/dashboard.html'
+        redirect: '/admin-products'
       });
     } catch (err) {
       console.error('Database error:', err);
@@ -392,7 +392,7 @@ exports.updateProduct = (req, res) => {
           namaProduk: product.namaProduk,
           updatedAt: product.updatedAt
         },
-        redirect: '/admin-products.html'  // Include redirect path for frontend
+        redirect: '/admin-products'  // Include redirect path for frontend
       });
       
     } catch (error) {

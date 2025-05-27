@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       item.className = 'dropdown-item';
       item.textContent = product.namaProduk;
       item.addEventListener('click', () => {
-        window.location.href = `product-details.html?id=${product.id}`;
+        window.location.href = `product-details?id=${product.id}`;
       });
       historyDropdown.appendChild(item);
     });
@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       product.namaProduk.toLowerCase().includes(keyword.toLowerCase())
     );
     if (result) {
-      window.location.href = `product-details.html?id=${result.id}`;
+      window.location.href = `product-details?id=${result.id}`;
     } else {
       alert("Produk tidak ditemukan.");
     }
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         product.namaProduk.toLowerCase().includes(keyword.toLowerCase())
       );
       if (result) {
-        window.location.href = `product-details.html?id=${result.id}`;
+        window.location.href = `product-details?id=${result.id}`;
       } else {
         alert("Produk tidak ditemukan.");
       }
