@@ -9,6 +9,7 @@ const { requireAuth, requireAdmin } = require(path.join(PATHS.server, 'auth', 'a
 const authRoutes = require(path.join(PATHS.server, 'auth', 'auth.routes.js'));
 const productRoutes = require(path.join(PATHS.server, 'routes', 'product.routes.js'));
 const { setupDirectories, cleanupTempFiles } = require(path.join(PATHS.server, 'util', 'setup.js'));
+require('dotenv').config();
 setupDirectories();
 cleanupTempFiles(0);
 
@@ -18,7 +19,38 @@ const connectLivereload = require('connect-livereload');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(helmet());
+const env = process.env.NODE_ENV === 'development';
+
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'",
+        "https://cdnjs.cloudflare.com",
+        "https://cdn.plot.ly",
+        ...(env ? ["http://localhost:35729"] : []),
+      ],
+      styleSrc: [
+        "'self'",
+        "https://cdnjs.cloudflare.com",
+        "https://fonts.googleapis.com",
+        "'unsafe-inline'",
+      ],
+      fontSrc: [
+        "'self'", 
+        "https://cdnjs.cloudflare.com",
+        "https://fonts.gstatic.com",
+      ],
+      imgSrc: ["'self'", "data:"],
+      connectSrc: [
+        "'self'",
+        ...(env ? ["ws://localhost:35729"] : []),
+      ]
+    }
+  })
+);
+
 app.use(cookieParser());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));

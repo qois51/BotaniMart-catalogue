@@ -155,7 +155,7 @@ function updateProductDetails(data) {
 
   // Update the image base URL to point to the products folder
   const imageBaseUrl = '/uploads/products/';
-  mainImage.src = data.picture ? `${imageBaseUrl}${data.picture}` : '/uploads/placeholder.jpeg';
+  mainImage.src = (data.picture && data.picture !== 'null') ? `${imageBaseUrl}${data.picture}` : '/uploads/placeholder.jpeg';
 
   const previewContainer = document.querySelector('.gambar-preview');
   if (previewContainer) {
@@ -188,13 +188,17 @@ function updateProductDetails(data) {
 
 function addPreviewImage(container, imagePath, id, baseUrl, defaultImage) {
   const preview = document.createElement('img');
-  preview.src = `${baseUrl}${imagePath}`;
+  if (imagePath && imagePath !== 'null') {
+    preview.src = `${baseUrl}${imagePath}`;
+  } else {
+    preview.src = defaultImage;
+  }
   preview.id = id;
   preview.className = 'preview-img';
   
   // Add error handler to use default image if the actual image fails to load
   preview.onerror = function() {
-    this.src = '/uploads/placeholder.jpeg';
+    this.src = defaultImage;
     console.log('Image failed to load, using placeholder instead');
   };
   
