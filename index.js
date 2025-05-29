@@ -27,9 +27,14 @@ app.use(
       defaultSrc: ["'self'"],
       scriptSrc: [
         "'self'",
+        "'unsafe-inline'",
         "https://cdnjs.cloudflare.com",
         "https://cdn.plot.ly",
         ...(env ? ["http://localhost:35729"] : []),
+      ],
+      scriptSrcAttr: [
+        "'self'",
+        "'unsafe-inline'"
       ],
       styleSrc: [
         "'self'",
