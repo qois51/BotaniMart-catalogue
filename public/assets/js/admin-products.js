@@ -565,7 +565,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <a href="edit-product?id=${product.id}" class="btn">
                                 <i class="fas fa-edit"></i> Edit
                             </a>
-                            <button class="btn delete-btn" onclick="openDeleteModal(${product.id})">
+                            <button class="btn delete-btn" data-product-id="${product.id}">
                                 <i class="fas fa-trash"></i> Delete
                             </button>
                         </div>
@@ -573,14 +573,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 </tr>
             `;
         }).join('');
+
+        // Setelah renderProducts, tambahkan event listener untuk tombol delete
+        document.querySelectorAll('.delete-btn[data-product-id]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const productId = this.getAttribute('data-product-id');
+                openDeleteModal(productId);
+            });
+        });
     }
     
-    // Make the delete function available globally
-    window.openDeleteModal = function(productId) {
+    function openDeleteModal(productId) {
         currentProductIdToDelete = productId;
         deleteModal.style.display = 'flex';
-    };
-    
+    }
 
     // Function to delete a product
     async function deleteProduct(productId) {
@@ -601,20 +607,14 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Handle response
             if (response.ok) {
-                // Success - remove product from DOM
-                const productElement = document.querySelector(`[data-product-id="${productId}"]`);
-                if (productElement) {
-                    productElement.remove();
-                }
-                
-                // Remove product from arrays
+                // Success
                 allProducts = allProducts.filter(p => p.id !== productId);
                 filteredProducts = filteredProducts.filter(p => p.id !== productId);
-                
+
                 // Update stats and re-render products
                 updateStats();
                 renderProducts();
-                
+
                 // Show success message
                 showNotification('Product deleted successfully', 'success');
             } else {
