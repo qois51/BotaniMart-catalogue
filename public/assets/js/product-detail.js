@@ -115,6 +115,7 @@ async function fetchProductData(productId) {
     updateProductDetails({
       name: data.namaProduk,
       price: data.hargaProduk,
+      namaLatin: data.namaLatin || '',
       description: data.deskripsi,
       stock: data.stockProduk,
       category: data.kategoriMain,
@@ -149,6 +150,7 @@ function updateProductDetails(data) {
   const mainImage = document.getElementById('main-image');
   const titleElement = document.getElementById('product-name');
   const typeElement = document.getElementById('product-type');
+  const latinNameElement = document.getElementById('product-latin-name');
   const stockElement = document.getElementById('stok-info');
   const priceElement = document.getElementById('product-price');
   const descriptionElement = document.getElementById('product-desc');
@@ -181,6 +183,7 @@ function updateProductDetails(data) {
 
   titleElement.textContent = data.name;
   typeElement.textContent = data.category;
+  latinNameElement.textContent = data.namaLatin;
   stockElement.textContent = `Stok: ${data.stock}`;
   priceElement.textContent = `Rp${parseInt(data.price).toLocaleString('id-ID')}`;
   descriptionElement.innerHTML = data.description;
