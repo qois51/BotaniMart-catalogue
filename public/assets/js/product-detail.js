@@ -118,7 +118,6 @@ async function fetchProductData(productId) {
       namaLatin: data.namaLatin || '',
       description: data.deskripsi,
       stock: data.stockProduk,
-      category: data.kategoriMain,
       picture: data.gambarUtama,
       gambarKedua: data.gambarKedua || null,
       gambarKetiga: data.gambarKetiga || null,
@@ -182,7 +181,6 @@ function updateProductDetails(data) {
   }
 
   titleElement.textContent = data.name;
-  typeElement.textContent = data.category;
   latinNameElement.textContent = data.namaLatin;
   stockElement.textContent = `Stok: ${data.stock}`;
   priceElement.textContent = `Rp${parseInt(data.price).toLocaleString('id-ID')}`;
