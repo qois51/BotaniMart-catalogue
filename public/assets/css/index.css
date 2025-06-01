@@ -228,10 +228,14 @@ body {
   font-family: poly;
   cursor: pointer;
   display: flex;
-  justify-content: space-between; /* Ini membuat ikon ke kanan */
-  align-items: center;
+  align-items: flex-start; /* Ubah agar teks bisa wrap ke bawah */
+  justify-content: space-between;
   width: 100%;
   padding: 5px 10px;
+  gap: 10px; /* Supaya teks dan icon tidak terlalu mepet */
+  white-space: normal; /* Penting: biarkan teks membungkus */
+  word-break: break-word; /* Agar teks panjang tetap wrap */
+  text-align: left;
 }
 
 .dropdown-btn i {
