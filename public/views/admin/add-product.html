@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
-
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,109 +10,125 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jodit/3.24.2/jodit.min.js"></script>
   </head>
 <body>
-  <div class="header">
-    <div class="judul">
-      <img src="../uploads/Botani mart.png" alt="Botani Mart Logo" class="logo">
-    </div>
-    <div class="profile-icon">
-      <i class="fas fa-user-circle"></i>
-      <div class="dropdown-profile">
-        <div class="menu-user-header">
-          <i class="fas fa-user"></i> <span id="username">Admin</span>
-        </div>
-        <div class="dropdown-item">
-          <i class="fas fa-eye"></i> Show Profile
-        </div>
-        <div class="dropdown-item">
-          <i class="fas fa-sign-out-alt"></i> Logout
-        </div>
-      </div>
-    </div>
-  </div>
-
+<body>
   <div class="container">
-    <h1 id="judul-sub">Add New Product</h1>
-    <form id="productForm" enctype="multipart/form-data">
-      <div class="image-section">
-        <div class="main-image-container">
-          <img src="../uploads/placeholder.jpeg" alt="Product image" class="main-image" id="mainImagePreview">
-          <div class="image-overlay">
-            <i class="fas fa-camera"></i>
-            <span>Click to upload main image</span>
+    <header>
+      <h1>Add Product</h1>
+    </header>
+
+    <div class="back-link">
+      <a href="/admin/admin-products">
+        <i class="fas fa-arrow-left"></i> Back to Products
+      </a>
+    </div>
+
+    <div class="edit-container">
+      <form id="addProductForm">
+
+        <!-- === SECTION: IMAGE UPLOAD DI ATAS === -->
+        <div class="images-section">
+          <h3>Product Images</h3>
+          <p class="help-text">Upload at least 1 image. Max 4 images total.</p>
+
+          <div class="image-containers">
+            <div class="image-container main-image-container">
+              <div class="image-label">Main Image</div>
+              <div class="image-preview" id="mainImagePreview">
+                <img src="../uploads/placeholder.jpeg" alt="Main product image">
+                <div class="image-overlay">
+                  <i class="fas fa-upload"></i>
+                </div>
+              </div>
+              <input type="file" id="mainImageUpload" class="hidden-upload" accept="image/*" required>
+            </div>
+
+            <div class="thumbnails-container">
+              <div class="thumb-container">
+                <div class="image-label">Image 2</div>
+                <div class="image-preview thumb" data-index="0">
+                  <img src="../uploads/placeholder.jpeg" alt="Product thumbnail">
+                  <div class="image-overlay">
+                    <i class="fas fa-upload"></i>
+                  </div>
+                </div>
+                <input type="file" class="hidden-upload thumb-upload" accept="image/*">
+              </div>
+
+              <div class="thumb-container">
+                <div class="image-label">Image 3</div>
+                <div class="image-preview thumb" data-index="1">
+                  <img src="../uploads/placeholder.jpeg" alt="Product thumbnail">
+                  <div class="image-overlay">
+                    <i class="fas fa-upload"></i>
+                  </div>
+                </div>
+                <input type="file" class="hidden-upload thumb-upload" accept="image/*">
+              </div>
+
+              <div class="thumb-container">
+                <div class="image-label">Image 4</div>
+                <div class="image-preview thumb" data-index="2">
+                  <img src="../uploads/placeholder.jpeg" alt="Product thumbnail">
+                  <div class="image-overlay">
+                    <i class="fas fa-upload"></i>
+                  </div>
+                </div>
+                <input type="file" class="hidden-upload thumb-upload" accept="image/*">
+              </div>
+            </div>
           </div>
-          <input type="file" id="mainImageUpload" accept="image/*" style="display: none;">
         </div>
-        
-        <div class="thumbnail-row">
-          <div class="thumb-container">
-            <img src="../uploads/placeholder.jpeg" alt="Thumbnail 1" class="thumb" id="thumb1Preview">
-            <div class="thumb-overlay">
-              <i class="fas fa-camera"></i>
-              <span>Image 1</span>
-            </div>
-            <input type="file" id="thumb1Upload" accept="image/*" style="display: none;">
+        <!-- === END IMAGE SECTION === -->
+
+        <!-- === FORM PRODUK === -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="product-name">Product Name</label>
+            <input type="text" id="product-name" name="namaProduk" required>
           </div>
-          <div class="thumb-container">
-            <img src="../uploads/placeholder.jpeg" alt="Thumbnail 2" class="thumb" id="thumb2Preview">
-            <div class="thumb-overlay">
-              <i class="fas fa-camera"></i>
-              <span>Image 2</span>
-            </div>
-            <input type="file" id="thumb2Upload" accept="image/*" style="display: none;">
-          </div>
-          <div class="thumb-container">
-            <img src="../uploads/placeholder.jpeg" alt="Thumbnail 3" class="thumb" id="thumb3Preview">
-            <div class="thumb-overlay">
-              <i class="fas fa-camera"></i>
-              <span>Image 3</span>
-            </div>
-            <input type="file" id="thumb3Upload" accept="image/*" style="display: none;">
+          <div class="form-group">
+            <label for="latin-name">Latin Name (Optional)</label>
+            <input type="text" id="latin-name" name="namaLatin">
           </div>
         </div>
 
-      <div class="form-section">
-        <div class="form-group">
-          <label for="product-name">Product Name <span class="required">*</span></label>
-          <input type="text" placeholder="Enter product name..." class="input-chip" id="product-name" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="latin-name">Latin Name</label>
-          <input type="text" placeholder="Enter Latin name..." class="input-chip" id="latin-name">
-        </div>
-        
         <div class="form-row">
-          <div class="form-group half">
-            <label for="price">Price (Rp) <span class="required">*</span></label>
-            <input type="number" placeholder="Enter price..." class="input-chip" id="price" required min="0">
+          <div class="form-group">
+            <label for="price">Price (Rp)</label>
+            <input type="number" id="price" name="hargaProduk" required>
           </div>
         </div>
-        
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="mainCategory">Main Category</label>
+            <input type="text" id="mainCategory" name="kategoriMain" required placeholder="Enter main category (e.g. Indoor Plants)">
+          </div>
+          <div class="form-group">
+            <label for="subCategory">Sub Category</label>
+            <input type="text" id="subCategory" name="kategoriSub" placeholder="Enter sub-category if applicable">
+          </div>
+        </div>
+
         <div class="form-group">
           <label for="description">Product Description</label>
-          <textarea id="description" class="description" name="description"></textarea>
-        </div>
-        
-        <div class="form-row">
-          <div class="form-group half">
-            <label for="mainCategory">Main Category <span class="required">*</span></label>
-            <input type="text" placeholder="Main category..." class="input-chipkat" id="mainCategory" required>
-          </div>
-          <div class="form-group half">
-            <label for="subCategory">Sub Category <span class="required">*</span></label>
-            <input type="text" placeholder="Sub category..." class="input-chipkat" id="subCategory" required>
-          </div>
+          <textarea id="description" name="deskripsi"></textarea>
         </div>
 
         <div class="form-actions">
-          <button type="button" class="cancel-btn" onclick="window.history.back()">Cancel</button>
-          <button type="submit" class="add-product">Add Product</button>
+          <button type="button" id="cancelBtn" class="btn cancel-btn">Cancel</button>
+          <button type="submit" id="saveBtn" class="btn save-btn">Add Product</button>
         </div>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
-  
+
+  <div id="notification" class="notification" style="display: none;">
+    <span id="notification-message"></span>
+    <button id="notification-close" class="close-notification">&times;</button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jodit/3.24.2/jodit.min.js"></script>
   <script src="../assets/js/addProduct.js"></script>
 </body>
-
 </html>

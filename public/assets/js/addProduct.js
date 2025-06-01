@@ -1,12 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('.form-section');
-    const addProductBtn = document.querySelector('.add-product');
-    const mainImageElement = document.querySelector('.main-image');
-    const mainImageContainer = document.querySelector('.main-image-container');
+    const form = document.getElementById('addProductForm');
+    const saveBtn = document.getElementById('saveBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const mainImagePreview = document.querySelector('.main-image-container .image-preview img') ||
+                             document.querySelector('#mainImagePreview img');
     const mainImageUpload = document.getElementById('mainImageUpload');
-    const thumbnails = document.querySelectorAll('.thumb');
-    const thumbUploads = document.querySelectorAll('.thumb-container input[type="file"]');
-    
+    const thumbContainers = document.querySelectorAll('.thumb-container');
+    const thumbUploads = document.querySelectorAll('.thumb-upload');
+    const thumbPreviews = document.querySelectorAll('.thumb-container .thumb img');
+
     let mainImageFile = null;
     let thumbImageFiles = [null, null, null];
 
@@ -99,83 +101,73 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Set up image upload for main image
-    mainImageContainer.addEventListener('click', function() {
+    // Main image upload
+    document.querySelector('.main-image-container .image-preview').addEventListener('click', function() {
         mainImageUpload.click();
     });
-    
+
     mainImageUpload.addEventListener('change', async function(e) {
         const file = this.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = (e) => {
-                mainImageElement.src = e.target.result;
-                mainImageElement.style.opacity = '0.5';
+                mainImagePreview.src = e.target.result;
+                mainImagePreview.style.opacity = '0.5';
             };
             reader.readAsDataURL(file);
-            
-            // Then upload to temp location
+
             try {
-                mainImageElement.style.opacity = '0.5';
+                mainImagePreview.style.opacity = '0.5';
                 const tempPath = await uploadToTemp(file);
                 if (tempPath) {
-                    // Store the file for later form submission
                     mainImageFile = file;
-                    // Update the preview with the temp image from server
-                    mainImageElement.src = tempPath;
-                    mainImageElement.style.opacity = '1'; // Restore opacity
-                    console.log('Main image set to temp path:', tempPath);
+                    mainImagePreview.src = tempPath;
+                    mainImagePreview.style.opacity = '1';
                 }
             } catch (error) {
-                mainImageElement.style.opacity = '1'; // Restore opacity on error
+                mainImagePreview.style.opacity = '1';
                 console.error('Error in temp upload:', error);
             }
         }
     });
-    
-    // Set up thumbnail uploads
-    thumbUploads.forEach((upload, index) => {
-        const thumbContainer = upload.closest('.thumb-container');
-        const thumbPreview = thumbContainer.querySelector('.thumb');
-        
-        thumbContainer.addEventListener('click', function() {
-            upload.click();
+
+    // Thumbnail uploads
+    thumbContainers.forEach((container, index) => {
+        const thumbPreview = container.querySelector('.thumb img');
+        const thumbUpload = container.querySelector('.thumb-upload');
+        container.querySelector('.image-preview').addEventListener('click', function() {
+            thumbUpload.click();
         });
-        
-        upload.addEventListener('change', async function(e) {
+        thumbUpload.addEventListener('change', async function(e) {
             const file = this.files[0];
             if (file) {
-                // First, show the image locally for preview
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     thumbPreview.src = e.target.result;
-                    thumbPreview.style.opacity = '0.5'; // Dim the image to indicate loading
+                    thumbPreview.style.opacity = '0.5';
                 };
                 reader.readAsDataURL(file);
-                
-                // Then upload to temp location
+
                 try {
-                    thumbPreview.style.opacity = '0.5'; // Dim the image to indicate loading
+                    thumbPreview.style.opacity = '0.5';
                     const tempPath = await uploadToTemp(file);
                     if (tempPath) {
-                        // Store the file for later form submission
                         thumbImageFiles[index] = file;
-                        // Update the preview with the temp image from server
                         thumbPreview.src = tempPath;
-                        thumbPreview.style.opacity = '1'; // Restore opacity
-                        console.log(`Thumbnail ${index+1} set to temp path:`, tempPath);
+                        thumbPreview.style.opacity = '1';
                     }
                 } catch (error) {
-                    thumbPreview.style.opacity = '1'; // Restore opacity on error
+                    thumbPreview.style.opacity = '1';
                     console.error('Error in temp upload:', error);
                 }
             }
         });
     });
-    
+
     // Form submission
-    addProductBtn.addEventListener('click', async () => {
-        // Get form values using the correct IDs from your HTML
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
         const namaProduk = document.getElementById('product-name').value;
         const namaLatin = document.getElementById('latin-name').value;
         const hargaProduk = document.getElementById('price').value;
@@ -183,24 +175,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const mainKategory = document.getElementById('mainCategory').value;
         const subKategory = document.getElementById('subCategory').value;
 
-        // Validate form with updated fields
-        if (!namaProduk || !hargaProduk || !mainKategory || !subKategory) {
+        if (!namaProduk || !hargaProduk || !mainKategory) {
             alert('Silakan lengkapi field yang wajib diisi!');
             return;
         }
-        
-        // Check if main image is selected
         if (!mainImageFile) {
             alert('Silakan pilih gambar utama produk!');
             return;
         }
-        
+
         try {
-            // Show loading state
-            addProductBtn.disabled = true;
-            addProductBtn.textContent = 'Menambahkan...';
-            
-            // Create FormData object to handle file uploads
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Menambahkan...';
+
             const formData = new FormData();
             formData.append('namaProduk', namaProduk);
             formData.append('namaLatin', namaLatin);
@@ -208,11 +195,8 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('deskripsi', deskripsi);
             formData.append('kategoriMain', mainKategory);
             formData.append('kategoriSub', subKategory);
-            
-            // Append images
             formData.append('gambarUtama', mainImageFile);
-            
-            // Append thumbnail images if they exist
+
             thumbImageFiles.forEach((file, index) => {
                 if (file) {
                     const fieldName = ['gambarKedua', 'gambarKetiga', 'gambarKeempat'][index];
@@ -220,40 +204,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
-            // Log form data (for debugging)
-            console.log('Form data prepared:');
-            for (const pair of formData.entries()) {
-                if (pair[1] instanceof File) {
-                    console.log(`${pair[0]}: File - ${pair[1].name} (${pair[1].type}, ${pair[1].size} bytes)`);
-                } else {
-                    console.log(`${pair[0]}: ${pair[1]}`);
-                }
-            }
-            
-            // Send the data to the server for final product creation
             const response = await fetch('/api/products', {
                 method: 'POST',
                 body: formData,
             });
-            
+
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.error || 'Failed to add product');
             }
-            
-            const result = await response.json();
+
             alert('Produk berhasil ditambahkan!');
-            
-            // Redirect to dashboard or product list
             window.location.href = '/admin/admin-products';
-            
+
         } catch (error) {
             console.error('Error submitting product:', error);
             alert(`Error: ${error.message}`);
-            
-            // Reset button state
-            addProductBtn.disabled = false;
-            addProductBtn.textContent = 'Add Product';
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Add Product';
         }
+    });
+
+    // Cancel button
+    cancelBtn.addEventListener('click', function() {
+        window.location.href = '/admin/admin-products';
     });
 });
