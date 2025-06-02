@@ -1,10 +1,10 @@
 # BotaniMart-catalogue
-Tugas Rekayasa Perangkat Lunak
-RPL P1 Kelompok 2
-Qois Firosi - G6401231031
-Luthfi Muharram - G6401231056
-M. Ibnu Fadhil - G6401231073
-Naufal Rama Koswara - G6401231113
+Tugas Rekayasa Perangkat Lunak  
+RPL P1 Kelompok 2  
+Qois Firosi - G6401231031  
+Luthfi Muharram - G6401231056  
+M. Ibnu Fadhil - G6401231073  
+Naufal Rama Koswara - G6401231113  
 Muhammad Salman Maulana - G6401231153
 
 ## Panduan Kolaborasi Github
